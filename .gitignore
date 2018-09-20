@@ -93,7 +93,8 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
-
+__pycache__ file
+__pycache__/
 # Rope project settings
 .ropeproject
 
@@ -102,3 +103,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# ignore the logger file
+*.log
