@@ -20,6 +20,6 @@
 >>logger.critical('Message')
 
 #### Mysql Connection
->MySQL is one of the world's most popular open source database that is supported by an active community of open source >developers and enthusiasts.
+>MySQL is one of the world's most popular open source database that is supported by an active community of open source developers and enthusiasts.
 
 >The reference codes are in **mysql_in_python.py**
