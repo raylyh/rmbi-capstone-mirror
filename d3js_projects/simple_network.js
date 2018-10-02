@@ -54,7 +54,6 @@ d3.json("d3js_projects/testing.json").then(function(data) {
 }
 });
 
-
 function dragstart(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
   d.fx = d.x;
