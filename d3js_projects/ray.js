@@ -45,6 +45,6 @@ var p = d3.select("body").selectAll("p") //document object model
 	.enter()
 	.append("p")
 	// d is data array, i is index
-	.text(function (d, i) { 
+	.text(function (d, i) {
 		return "i = " + i + " d = " + d;
 	});
