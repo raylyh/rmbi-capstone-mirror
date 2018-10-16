@@ -22,3 +22,7 @@ h1.wtf {
  	stroke: #fff;
  	stroke-width: 3px;
  }
+
+ .nodes text {
+ 	color: red;
+ }

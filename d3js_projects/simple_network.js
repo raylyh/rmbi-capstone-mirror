@@ -1,6 +1,8 @@
 var width = 960,
     height = 600;
 
+var radius = 20;
+
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var svg = d3.select("body").append("svg")
@@ -10,7 +12,7 @@ var svg = d3.select("body").append("svg")
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
-    .force("charge", d3.forceManyBody())
+    .force("charge", d3.forceManyBody().strength(-500))
     .force("center", d3.forceCenter(width/2, height/2));
 
 d3.json("d3js_projects/testing.json").then(function(data) {
@@ -24,24 +26,30 @@ d3.json("d3js_projects/testing.json").then(function(data) {
     .enter().append("line")
     .attr("stroke-width", function(d) { return Math.sqrt(d.weight);});
 
-  var node = svg.append("g")
+  var node = svg.append("g") //create a group of node group
     .attr("class", "nodes")
-    .selectAll("circle")
+    .selectAll("g")
     .data(data.nodes)
-    .enter().append("circle")
-    .attr("r", 20)
+    .enter().append("g");
+
+  var circle = node.append("circle")//create circle in a node group
+    .attr("r", radius)
     .attr("fill", function(d) { return color(d.group); })
     .call(d3.drag()
       .on("start", dragstart)
       .on("drag", dragging)
       .on("end", dragend));
 
-  node.append("title")
-      .text(function(d) { return d.id; });
+  var labels = node.append("text") //create label in a node group
+    .text(function(d) { return d.id;})
+    .attr("dx", 6)
+    .attr("dy", 3);
 
   simulation.nodes(data.nodes).on("tick", ticked);
   simulation.force("link").id( function(d) {return d.id;});
   simulation.force("link").links(data.links);
+
+  d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function
 
   function ticked() {
   link.attr("x1", function(d) { return d.source.x; })
@@ -49,9 +57,15 @@ d3.json("d3js_projects/testing.json").then(function(data) {
       .attr("x2", function(d) { return d.target.x; })
       .attr("y2", function(d) { return d.target.y; });
 
-  node.attr("cx", function(d) { return d.x; })
-      .attr("cy", function(d) { return d.y; });
-}
+  node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")";
+    });
+  }
+
+  function clicked() {
+    d3.select(this).select("circle").attr("fill", "red"); //turns a clicked to red
+    d3.select(this).select("text").text(function(d) {return d.name;});
+  }
+
 });
 
 
