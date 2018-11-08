@@ -1,9 +1,9 @@
 import logging
 import os
 
-def set_up_logger():
+def set_up_logger(__name__ = None):
     # creates logger
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
     # create a handler to remote
@@ -15,7 +15,7 @@ def set_up_logger():
     file_logging.setLevel(logging.DEBUG)
 
     # set the format to the handler
-    formatter = logging.Formatter(fmt="%(asctime)s - %(filename)s - %(levelname)s - %(message)s",
+    formatter = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                                       datefmt="%m/%d/%Y %H:%M:%S")
     console.setFormatter(formatter)
     file_logging.setFormatter(formatter)
