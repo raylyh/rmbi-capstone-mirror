@@ -1,6 +1,7 @@
-import pymysql
+import pymysql, sys, random, names
+import numpy as np
+import pandas as pd
 from logger.logger import set_up_logger
-import sys
 
 logger = set_up_logger()
 
@@ -34,7 +35,7 @@ def main():
     #       0. exit                          #
     ##########################################
         """)
-        option = input("Please select an option:")
+        option = input("Please select an option: ")
 
         if option == "0" or option == "exit":
             cursor.close()
@@ -58,18 +59,20 @@ def createTable(cursor):
     #       3. Create CustomerRelationship   #
     ##########################################
     """)
-    option = input("Please select an option:")
+    option = input("Please select an option: ")
 
     if option == "1":
         cursor.execute("SHOW TABLES")
-        tables = cursor.fetchall()
-        for i in tables:
-            print(i)
+        for (i,) in cursor.fetchall():
+            logger.info(i)
+            cursor.execute("SHOW COLUMNS FROM " + i)
+            for column in cursor.fetchall():
+                print("{} , type {}".format(column[0], column[1]))
         logger.info("Success")
     elif option == "2":
         try:
             cursor.execute("""CREATE TABLE CustomerInfo (
-                customerID BIGINT, age INT, Gender VARCHAR(20), Address VARCHAR(200),
+                customerID BIGINT, name VARCHAR(100), age INT, gender VARCHAR(20), Address VARCHAR(200),
                 primary key (customerID))""")
             logger.info("Success")
         except Exception as e:
@@ -77,7 +80,7 @@ def createTable(cursor):
     elif option == "3":
         try:
             cursor.execute("""CREATE TABLE CustomerRelationship (
-                customerID1 BIGINT, customerID2 BIGINT, weight INT, relationship1 VARCHAR(200), relationship2 VARCHAR(200),
+                customerID1 BIGINT, customerID2 BIGINT, weight INT, type INT,
                 foreign key (customerID1) references CustomerInfo(customerID),
                 foreign key (customerID2) references CustomerInfo(customerID))""")
             logger.info("Success")
@@ -85,32 +88,50 @@ def createTable(cursor):
             logger.error(e)
     return
 
-"""
 
-##########################################
-#          insert data in mysql          #
-##########################################
+def insertData(cursor, client):
+    print("""
+    ##########################################
+    #          Insert Data into Tables       #
+    #       1. Insert CustomerInfo           #
+    #       2. Insert CustomerRelationship   #
+    ##########################################
+    """)
 
-sql = "INSERT INTO customers (name, address) VALUES (%s, %s)"
-val = [
-  ('Peter', 'Lowstreet 4'),
-  ('Amy', 'Apple st 652'),
-  ('Hannah', 'Mountain 21'),
-  ('Michael', 'Valley 345'),
-  ('Sandy', 'Ocean blvd 2'),
-  ('Betty', 'Green Grass 1'),
-  ('Richard', 'Sky st 331'),
-  ('Susan', 'One way 98'),
-  ('Vicky', 'Yellow Garden 2'),
-  ('Ben', 'Park Lane 38'),
-  ('William', 'Central st 954'),
-  ('Chuck', 'Main Road 989'),
-  ('Viola', 'Sideway 1633')
-]
+    option = input("Please select an option: ")
 
-cursor.executemany(sql, val)
-client.commit()
-logger.info(cursor.rowcount, "was inserted.")
-"""
+    if option == "1":
+        sql = "INSERT INTO CustomerInfo (customerID, name, age, gender, address) VALUES (%s, %s, %s, %s, %s)"
+        #customerID is in range of [1, 297111]
+        #tuple: (customerID, name, age, gender, address)
+        val = [(i,
+            names.get_full_name(),
+            random.randint(18,80),
+            random.choice(['M','F']),
+            "address"+str(i)) for i in range(1, 297112)]
+        logger.info("Finish generating random info")
+        try:
+            cursor.executemany(sql, val)
+            client.commit()
+            logger.info("Inserted rows:")
+            logger.info(cursor.rowcount)
+        except Exception as e:
+            logger.error(e)
+
+    elif option == "2":
+        with open("data/data.csv") as f:
+            table = pd.read_csv(f, delimiter=',')
+
+        sql = "INSERT INTO CustomerRelationship (customerID1, customerID2, weight, type) VALUES (%s, %s, %s, %s)"
+        #tuple: (customerID1, customerID2, weight, type)
+        val = list(table.itertuples(index=False, name=None))
+        try:
+            cursor.executemany(sql, val)
+            client.commit()
+            logger.info("Inserted rows:")
+            logger.info(cursor.rowcount)
+        except Exception as e:
+            logger.error(e)
+        return
 
 main()
