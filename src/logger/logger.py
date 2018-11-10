@@ -11,7 +11,7 @@ def set_up_logger(__name__ = None):
     console.setLevel(logging.DEBUG)
 
     # create a handler to file
-    file_logging = logging.FileHandler(os.path.join(os.getcwd(), 'logger','output.log'))
+    file_logging = logging.FileHandler(os.path.join(os.getcwd(),'src', 'logger','output.log'))
     file_logging.setLevel(logging.DEBUG)
 
     # set the format to the handler
