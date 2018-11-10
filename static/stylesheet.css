@@ -1,0 +1,28 @@
+ p {
+ 	font-size : 12pt;
+ 	color : black;
+}
+
+ h1 {
+ 	font-size : 45pt;
+ 	color : green;
+ }
+/* h1.wtf is different from .wtf h1*/
+h1.wtf {
+	color : blue;
+}
+
+/* .links is descendant selector*/
+ .links line {
+ 	stroke : #999;
+ 	stroke-opacity: 0.6;
+ }
+
+ .nodes circle {
+ 	stroke: #fff;
+ 	stroke-width: 3px;
+ }
+
+ .nodes text {
+ 	color: red;
+ }

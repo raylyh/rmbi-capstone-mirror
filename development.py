@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from src.logger.logger import set_up_logger
-from src.node_relationship.node import get_all_relationship
-
+from src.node_relationship.node import get_all_relationship, drop_duplicate
 
 
 __name__ = 'Development'
@@ -11,6 +10,8 @@ logger = set_up_logger(__name__)
 reading = pd.read_csv('./data/data.csv')
 
 reading.columns
+
+drop_duplicate(reading)
 
 set(reading.RELATIONSHIP.values)
 
