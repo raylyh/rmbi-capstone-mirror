@@ -1,7 +1,6 @@
 import pymysql, sys, random, names
-import numpy as np
 import pandas as pd
-from logger.logger import set_up_logger
+from src.logger.logger import set_up_logger
 
 logger = set_up_logger()
 
@@ -121,7 +120,6 @@ def insertData(cursor, client):
     elif option == "2":
         with open("data/data.csv") as f:
             table = pd.read_csv(f, delimiter=',')
-
         sql = "INSERT INTO CustomerRelationship (customerID1, customerID2, weight, type) VALUES (%s, %s, %s, %s)"
         #tuple: (customerID1, customerID2, weight, type)
         val = list(table.itertuples(index=False, name=None))
