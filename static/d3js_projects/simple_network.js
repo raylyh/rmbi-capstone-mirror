@@ -15,7 +15,10 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-500))
     .force("center", d3.forceCenter(width/2, height/2));
 
-d3.json("/testing/allCustomers").then(function(data) {
+//var data = d3.json("/testing/particularCustomer")
+//console.log(data)
+
+d3.json("/testing/initialize").then(function(data) {
 
   console.log(data.links);
 
