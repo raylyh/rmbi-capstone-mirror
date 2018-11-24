@@ -6,17 +6,6 @@ import copy
 __name__ = 'Node'
 logger = set_up_logger(__name__)
 
-# drop dupliate rows and values
-
-def drop_duplicate(df):
-    df_local = df.copy()
-    df_local['CUSTOMER_1_ID_NEW'] =  df_local['CUSTOMER_2_ID']
-    df_local['CUSTOMER_2_ID_NEW'] =  df_local['CUSTOMER_1_ID']
-    df_match = df_local.query('CUSTOMER_1_ID == CUSTOMER_1_ID_NEW & CUSTOMER_2_ID == CUSTOMER_2_ID_NEW')
-    print(df_match)
-
-    return df_match
-
 def node_relationship(customer_id,df,remove_id = None,degree = None):
 
     # to check whether customer_id is a list or not
@@ -47,7 +36,7 @@ def node_relationship(customer_id,df,remove_id = None,degree = None):
         list_of_customer = list(set(list_of_customer) - set(customer_id) - set(list(remove_id)))
 
     logger.info('Customer ID {} are found in degree {}'.format(list_of_customer,degree))
-    return (list_of_customer)
+    return list_of_customer
 
 def get_all_relationship(customer_id,df,degree = 6):
     # create a list to remove
@@ -56,6 +45,7 @@ def get_all_relationship(customer_id,df,degree = 6):
     obtain_id = [customer_id]
     # the customer id in current degree (i.e. now is 0)
     customer_id_in_degree = [customer_id]
+
     for i in range(degree):
         logger.info('You are in degree {}'.format(i))
         logger.info('Already to get customer id in degree {}'.format(int(i + 1)))
@@ -77,6 +67,5 @@ def get_all_relationship(customer_id,df,degree = 6):
         else:
             # set the current degree to the next degree and continue
             customer_id_in_degree = customer_id_in_next_degree
-
 
     return obtain_id
