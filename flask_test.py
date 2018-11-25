@@ -22,7 +22,7 @@ def initialize():
     if customerID:
         id = customerID
     else:
-        id = random.randint(1, 297111)  #Problem: 170214, 112790
+        id = random.randint(1, 297111)  #Problem: 170214, 112790, 234
 
     csv_data = pd.read_csv('./data/data.csv')
     logger.info('Random Customer ID is {} '.format(id))

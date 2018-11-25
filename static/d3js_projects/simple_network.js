@@ -1,7 +1,7 @@
 var width = 640,
     height = 400;
 
-var radius = 20;
+var radius = 10;
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
