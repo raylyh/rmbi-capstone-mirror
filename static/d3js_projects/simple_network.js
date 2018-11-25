@@ -1,5 +1,5 @@
-var width = 960,
-    height = 600;
+var width = 640,
+    height = 400;
 
 var radius = 20;
 
@@ -15,13 +15,7 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-500))
     .force("center", d3.forceCenter(width/2, height/2));
 
-//var data = d3.json("/testing/particularCustomer")
-//console.log(data)
-
-d3.json("/testing/initialize").then(function(data) {
-
-  console.log(data.links);
-
+function draw(data) {
   var link = svg.append("g")
     .attr("class", "links")
     .selectAll("line")
@@ -45,8 +39,8 @@ d3.json("/testing/initialize").then(function(data) {
 
   var labels = node.append("text") //create label in a node group
     .text(function(d) { return d.id;})
-    .attr("dx", 6)
-    .attr("dy", 3);
+    .attr("dx", 20)
+    .attr("dy", 5);
 
   simulation.nodes(data.nodes).on("tick", ticked);
   simulation.force("link").id( function(d) {return d.id;});
@@ -68,8 +62,7 @@ d3.json("/testing/initialize").then(function(data) {
     d3.select(this).select("circle").attr("fill", "red"); //turns a clicked to red
     d3.select(this).select("text").text(function(d) {return d.name;});
   }
-
-});
+}
 
 function dragstart(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
