@@ -1,5 +1,5 @@
-var width = 640,
-    height = 400;
+var width = 1920,
+    height = 1080;
 
 var radius = 10;
 
@@ -12,7 +12,7 @@ var svg = d3.select("body").append("svg")
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
-    .force("charge", d3.forceManyBody().strength(-500))
+    .force("charge", d3.forceManyBody().strength(-100))
     .force("center", d3.forceCenter(width/2, height/2));
 
 function draw(data) {
