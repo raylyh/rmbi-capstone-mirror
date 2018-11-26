@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Capstone Project</title>
+		<!--CSS-->
+		<link href="{{ url_for('static', filename='stylesheet.css')}}" rel="stylesheet" type="text/css">
+		<!--d3.js-->
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+	</head>
+
+	<body>
+		<h1 class="wtf">Capstone Project - Network Visualization</h1>
+		{% if customerID %}
+			Customer ID is {{customerID}}<br>
+		{% else %}
+			Random initialize
+		{% endif %}
+
+		<form id="searchform" action ="/" method="POST">
+			Customer ID:<br>
+			<input type="text" name="customerID">
+			<input type="submit" name="submit" value="submit"><br>
+			<br>
+		</form>
+	</body>
+
+	<!--location to my script-->
+	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
+	<script type="text/javascript">
+		draw({{data|tojson}})
+	</script>
+	<!--script src="d3js_projects/ray.js"/script-->
+</html>
