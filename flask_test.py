@@ -28,8 +28,10 @@ def initialize():
     logger.info('Random Customer ID is {} '.format(id))
     customer_list = get_all_relationship(id, csv_data)
     logger.info('Customer Relationship is {} '.format(customer_list))
-    testing = str(tuple(customer_list))
-    logger.info('testing {}'.format(testing))
+    tuple_list = [str(sublist).replace("[", "(").replace("]", ")") for sublist in customer_list]
+    logger.info('tuple_list {}'.format(tuple_list))
+    flat_list = str(tuple([i for sublist in customer_list for i in sublist]))
+    logger.info('flat_list {}'.format(flat_list))
 
     try:
         client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")
@@ -40,7 +42,7 @@ def initialize():
         logger.error(e)
 
     #get the relationship of the customer and its related ppl
-    cursor.execute("SELECT * FROM CustomerRelationship WHERE customerID1 IN " + testing + " OR customerID2 IN " + testing)
+    cursor.execute("SELECT * FROM CustomerRelationship WHERE customerID1 IN " + flat_list + " OR customerID2 IN " + flat_list)
     links = []
     for relationship in cursor:
         row = dict(source=relationship[0], target=relationship[1],
@@ -48,11 +50,13 @@ def initialize():
         links.append(row)
 
     #get all customers in the network
-    cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + testing)
     nodes = []
-    for customer in cursor:
-        row = dict(id=customer[0], name=customer[1], group=customer[2])
-        nodes.append(row)
+    for idx, i in enumerate(tuple_list):
+        cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + i)
+        for customer in cursor:
+            #TODO:
+            row = dict(id=customer[0], name=customer[1], group=idx, age=customer[2])
+            nodes.append(row)
 
     cursor.close()
     client.close()

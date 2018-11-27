@@ -1,19 +1,22 @@
-var width = 640,
-    height = 400;
+var width = 1600,
+    height = 1000;
 
 var radius = 10;
 
-var color = d3.scaleOrdinal(d3.schemeCategory10);
+var degree = [6,5,4,3,2,1,0]
+
+var color = d3.scaleOrdinal(d3.schemeYlGnBu[7]).domain(degree);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .style("border", "2px solid black")
+    .style("background", "#FFCB52")
     .append("g");
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
-    .force("charge", d3.forceManyBody().strength(-100))
+    .force("charge", d3.forceManyBody().strength(-500))
     .force("center", d3.forceCenter(width/2, height/2));
 
 function draw(data) {
