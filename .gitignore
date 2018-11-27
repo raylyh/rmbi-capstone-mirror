@@ -106,3 +106,6 @@ __pycache__/
 
 # ignore the logger file
 *.log
+
+# ignore development python by ken
+development.py
