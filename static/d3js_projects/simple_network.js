@@ -1,5 +1,5 @@
-var width = 1920,
-    height = 1080;
+var width = 640,
+    height = 400;
 
 var radius = 10;
 
@@ -8,7 +8,8 @@ var color = d3.scaleOrdinal(d3.schemeCategory10);
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .style("border", "2px solid black");
+    .style("border", "2px solid black")
+    .append("g");
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
@@ -46,6 +47,7 @@ function draw(data) {
   simulation.force("link").id( function(d) {return d.id;});
   simulation.force("link").links(data.links);
 
+  d3.select("svg").call(d3.zoom().on("zoom", zoomed)); //zooming function
   d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function
 
   function ticked() {
@@ -79,4 +81,8 @@ function dragend(d) {
   if (!d3.event.active) simulation.alphaTarget(0);
   d.fx = null;
   d.fy = null;
+}
+
+function zoomed() {
+  d3.select("g").attr("transform", d3.event.transform);
 }
