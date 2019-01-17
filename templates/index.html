@@ -7,26 +7,40 @@
 		<link href="{{ url_for('static', filename='stylesheet.css')}}" rel="stylesheet" type="text/css">
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<script src="https://unpkg.com/d3-simple-slider/build/d3-simple-slider.js"></script>
 	</head>
 
 	<body>
-		<h1 class="wtf">Capstone Project - Network Visualization</h1>
-		{% if customerID %}
-			Customer ID is {{customerID}}<br>
-		{% else %}
-			Random initialize
-		{% endif %}
-
-		<form id="searchform" action ="/" method="POST">
-			Customer ID:<br>
-			<input type="text" name="customerID">
-			<input type="submit" name="submit" value="submit"><br>
-			<br>
-		</form>
+		<h1>Capstone Project - Network Visualization</h1>
+		<div>
+			{% if customerID %}
+				Customer ID is {{customerID}}<br>
+			{% else %}
+				Random initialize
+			{% endif %}
+			<form id="searchform" action ="/" method="POST">
+				Customer ID:<br>
+				<input type="text" name="customerID">
+				<input type="submit" name="submit" value="submit"><br>
+				<br>
+			</form>
+		</div>
+		<div class="container">
+			<h2>Step</h2>
+			<div class="row align-items-center">
+				<div class="col-sm-2"><p id="value-step"></p></div>
+				<div class="col-sm"><div id="slider-step"></div></div>
+			</div>
+		</div>
+		<div class="menu">
+			<input type="checkbox" id="showWeight" checked="checked">
+				Show Weight
+		</div>
 	</body>
 
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/sliders.js')}}"></script>
 	<script type="text/javascript">
 		draw({{data|tojson}})
 	</script>

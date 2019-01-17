@@ -27,11 +27,9 @@ def initialize():
     csv_data = pd.read_csv('./data/data.csv')
     logger.info('Random Customer ID is {} '.format(id))
     customer_list = get_all_relationship(id, csv_data)
-    logger.info('Customer Relationship is {} '.format(customer_list))
     tuple_list = [str(sublist).replace("[", "(").replace("]", ")") for sublist in customer_list]
     logger.info('tuple_list {}'.format(tuple_list))
     flat_list = str(tuple([i for sublist in customer_list for i in sublist]))
-    logger.info('flat_list {}'.format(flat_list))
 
     try:
         client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")

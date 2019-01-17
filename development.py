@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from src.logger.logger import set_up_logger
+from src/logger./logger import set_up_logger
 from src.node_relationship.node import get_all_relationship
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 __name__ = 'Development'
 logger = set_up_logger(__name__)
 
-reading = pd.read_csv('./data/data.csv')
+reading = pd.read_csv('./data/analysis_result.csv')
+
+logger.info(reading)
 
 int(len(reading.CUSTOMER_1_ID.value_counts())/4)
 
