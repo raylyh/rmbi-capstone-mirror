@@ -60,9 +60,10 @@ function draw(data) {
     .attr("dx", 20)
     .attr("dy", 5);
 
-  d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)); //zooming function
+  d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function select all g in g.nodes
+  d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
 
   simulation.nodes(data.nodes).on("tick", ticked);
   simulation.force("link").id( function(d) {return d.id;});
@@ -95,7 +96,7 @@ function draw(data) {
 // FUNCTIONS
 function clicked(d) {
   d3.selectAll("g.nodes g circle").attr("fill", function(d) { return color(d.group); });
-  d3.select(this).select("circle").attr("fill", "red"); //turns a clicked to red
+  d3.select(this).select("circle").attr("fill", "red"); //turns a clicked node to red
 
   // show the info of clicked node
   var display = "";
@@ -105,6 +106,13 @@ function clicked(d) {
     display += str[i][0] + ":" + str[i][1] + "\t";
   }
   d3.select("#info").select("text").text(display);
+}
+
+function dblclicked(d) {
+  //double-clicked circle to be green and then update the submit form
+  d3.select(this).select("circle").attr("fill", "green");
+  d3.select("#searchinput").property("value", d.id);
+  document.getElementById("searchform").submit();
 }
 
 function dragstart(d) {

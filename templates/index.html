@@ -14,14 +14,14 @@
 		<h1>Capstone Project - Network Visualization</h1>
 		<div>
 			{% if customerID %}
-				Customer ID is {{customerID}}<br>
+				Current ID: {{customerID}}<br>
 			{% else %}
 				Random initialize
 			{% endif %}
 			<form id="searchform" action ="/" method="POST">
-				Customer ID:<br>
-				<input type="text" name="customerID">
-				<input type="submit" name="submit" value="submit"><br>
+				Customer ID:
+				<input id="searchinput" type="text" name="customerID">
+				<input type="submit" value="submit"><br>
 				<br>
 			</form>
 		</div>
