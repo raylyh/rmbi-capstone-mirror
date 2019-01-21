@@ -61,7 +61,7 @@ function draw(data) {
     .attr("dy", 5);
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)); //zooming function
-  d3.select("#showWeight").on("change", showWeight); // show weight if checked
+  d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function select all g in g.nodes
 
   simulation.nodes(data.nodes).on("tick", ticked);
@@ -74,10 +74,8 @@ function draw(data) {
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; })
 
-    d3.selectAll("g.links text").attr("transform", function(d) { return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")";
-      });
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")";
-      });
+    d3.selectAll("g.links text").attr("transform", function(d) { return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")"; });
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
 
   function showWeight() {
@@ -86,7 +84,8 @@ function draw(data) {
         .append("text")
         .text(function(d) { return d.weight;} )
         .attr("fill", "#2C4050")
-        .attr("font-size", 14);;
+        .attr("font-size", 14)
+        .attr("transform", function(d) { return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")"; });
     } else {
       d3.selectAll("g.links text").data([]).exit().remove();
     }
@@ -94,9 +93,18 @@ function draw(data) {
 }
 
 // FUNCTIONS
-function clicked() {
+function clicked(d) {
+  d3.selectAll("g.nodes g circle").attr("fill", function(d) { return color(d.group); });
   d3.select(this).select("circle").attr("fill", "red"); //turns a clicked to red
-  d3.select(this).select("text").text(function(d) {return d.name;});
+
+  // show the info of clicked node
+  var display = "";
+  //slice away unwanted keys: index, x, y, vy, vx, fx, fy
+  var str = d3.zip(d3.keys(d).slice(0, -7), d3.values(d).slice(0, -7));
+  for (var i = 0; i < str.length; i++) {
+    display += str[i][0] + ":" + str[i][1] + "\t";
+  }
+  d3.select("#info").select("text").text(display);
 }
 
 function dragstart(d) {
