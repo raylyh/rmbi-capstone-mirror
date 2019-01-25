@@ -7,7 +7,7 @@
 		<link href="{{ url_for('static', filename='stylesheet.css')}}" rel="stylesheet" type="text/css">
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
-		<script src="https://unpkg.com/d3-simple-slider/build/d3-simple-slider.js"></script>
+		<!--script src="https://unpkg.com/d3-simple-slider/build/d3-simple-slider.js"></script-->
 	</head>
 
 	<body>
@@ -25,26 +25,31 @@
 				<br>
 			</form>
 		</div>
-		<div class="container">
+		<!--div class="container">
 			<h2>Step</h2>
 			<div class="row align-items-center">
 				<div class="col-sm-2"><p id="value-step"></p></div>
 				<div class="col-sm"><div id="slider-step"></div></div>
 			</div>
-		</div>
+		</div-->
 		<div class="menu">
-			<input type="checkbox" id="showWeight" checked="checked">
-				Show Weight
+			<div class="slidecontainer">
+				<h2>Functions</h2>
+				testing - Degree Slider (TODO: add the slider mark)
+				<br/><input type="range" min="1" max="6" value="6" step="1" class="slider" id=degreeslider>
+			</div>
+			<input type="checkbox" id="showWeight" checked="checked"> Show Weight
 		</div>
-		<div class="info" id="info">
-			Information Panel
-			<br/><text></text>
+		<div class="info">
+			<h2>Information Panel</h2>
+			<br/><text id=degreeInfo></text>
+			<br/><text id=customerInfo></text>
 		</div>
 	</body>
 
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/sliders.js')}}"></script>
+	<!--script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/sliders.js')}}"></script-->
 	<script type="text/javascript">
 		draw({{data|tojson}})
 	</script>

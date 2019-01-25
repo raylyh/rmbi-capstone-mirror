@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, make_response
 from src.logger.logger import set_up_logger
-from src.node_relationship.node import get_all_relationship
+#from src.node_relationship.node import get_all_relationship
+from src.node_relationship.node_edge import get_node_edge
 import pymysql, json, random
 import pandas as pd
 
@@ -20,44 +21,52 @@ def initialize():
     if request.method == "POST":
         customerID = request.form.get("customerID", None)
     if customerID:
-        id = customerID
+        id = int(customerID)
     else:
         id = random.randint(1, 297111)  #Problem: 170214, 112790, 234
 
-    csv_data = pd.read_csv('./data/data.csv')
-    logger.info('Random Customer ID is {} '.format(id))
-    customer_list = get_all_relationship(id, csv_data)
-    tuple_list = [str(sublist).replace("[", "(").replace("]", ")") for sublist in customer_list]
-    logger.info('tuple_list {}'.format(tuple_list))
-    flat_list = str(tuple([i for sublist in customer_list for i in sublist]))
+    nodes, links = get_node_edge(id)
 
-    try:
-        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")
-        cursor = client.cursor()
-        logger.info('Successful connection to MySQL Database')
-    except Exception as e:
-        logger.error("Fail to connect MySQL Database")
-        logger.error(e)
+    # csv_data = pd.read_csv('./data/data.csv')
+    # logger.info('Random Customer ID is {} '.format(id))
+    # customer_list = get_all_relationship(id, csv_data)
+    # logger.info(customer_list)
+    # tuple_list = [str(sublist).replace("[", "(").replace("]", ")") for sublist in customer_list]
+    # logger.info('tuple_list {}'.format(tuple_list))
+    # flat_list = [i for sublist in customer_list for i in sublist]
+    # logger.info(flat_list)
 
-    #get the relationship of the customer and its related ppl
-    cursor.execute("SELECT * FROM CustomerRelationship WHERE customerID1 IN " + flat_list + " OR customerID2 IN " + flat_list)
-    links = []
-    for relationship in cursor:
-        row = dict(source=relationship[0], target=relationship[1],
-            weight=relationship[2],type=relationship[3])
-        links.append(row)
 
-    #get all customers in the network
-    nodes = []
-    for idx, i in enumerate(tuple_list):
-        cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + i)
-        for customer in cursor:
-            #TODO:
-            row = dict(id=customer[0], name=customer[1], group=idx, age=customer[2])
-            nodes.append(row)
-
-    cursor.close()
-    client.close()
+    # try:
+    #     client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")
+    #     cursor = client.cursor()
+    #     logger.info('Successful connection to MySQL Database')
+    # except Exception as e:
+    #     logger.error("Fail to connect MySQL Database")
+    #     logger.error(e)
+    #
+    # links, nodes = [], []
+    # for idx, i in enumerate(tuple_list):
+    #     #get all customers in the network
+    #     cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + i)
+    #     for customer in cursor:
+    #         #TODO:
+    #         row = dict(id=customer[0], name=customer[1], group=idx, age=customer[2])
+    #         nodes.append(row)
+    #
+    #     #get the relationship of the customer and its related ppl
+    #     cursor.execute("SELECT * FROM CustomerRelationship WHERE customerID1 IN " + i + " OR customerID2 IN " + i)
+    #     for relationship in cursor:
+    #         #problem: some relationships out of bound for last degree of customers
+    #         #solution: check if it's in the flat_list
+    #         if idx == 6:
+    #             pass
+    #         row = dict(source=relationship[0], target=relationship[1],
+    #             weight=relationship[2], type=relationship[3], group=idx)
+    #         links.append(row)
+    #
+    # cursor.close()
+    # client.close()
 
     logger.info('edges {}'.format(len(links)))
     logger.info('nodes {}'.format(len(nodes)))

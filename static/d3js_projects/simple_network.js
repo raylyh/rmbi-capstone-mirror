@@ -3,8 +3,8 @@ var width = 640,
 
 var radius = 10;
 
-var degree = [6,5,4,3,2,1,0]
-var color = d3.scaleOrdinal(d3.schemeYlGnBu[7]).domain(degree);
+var degree = [0,1,2,3,4,5,6]
+var color = d3.scaleOrdinal(d3.schemeSpectral[7]).domain(degree);
 
 var weight_degree = [1,2,3,4,5]
 var weight_color = d3.scaleOrdinal(d3.schemeGreys[5]).domain(weight_degree);
@@ -60,8 +60,11 @@ function draw(data) {
     .attr("dx", 20)
     .attr("dy", 5);
 
+  //FUNCTIONALITY
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
+  showDegree(); //intialize first
+  d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
   d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
 
@@ -91,6 +94,19 @@ function draw(data) {
       d3.selectAll("g.links text").data([]).exit().remove();
     }
   }
+
+  function showDegree() {
+    //TODO:
+    //alert(document.getElementById("degreeslider").value);
+    //alert(d3.select(this).node().value);
+
+    var display = "";
+    for (var i = 0; i < degree.length; i++) {
+      display += "Degree " + i + ":" + node.filter(function(d) { return d.group == i;}).size() + "\t"
+    }
+    d3.select("#degreeInfo").text(display);
+    //d3.select("#degreeInfo").text(node.size());
+  }
 }
 
 // FUNCTIONS
@@ -105,7 +121,7 @@ function clicked(d) {
   for (var i = 0; i < str.length; i++) {
     display += str[i][0] + ":" + str[i][1] + "\t";
   }
-  d3.select("#info").select("text").text(display);
+  d3.select("#customerInfo").text(display);
 }
 
 function dblclicked(d) {
