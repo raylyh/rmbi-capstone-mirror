@@ -1,8 +1,18 @@
 import pymysql, sys, random, names
+import numpy as np
 import pandas as pd
 from src.logger.logger import set_up_logger
 
-logger = set_up_logger()
+__name__ = 'MySQL_Connection'
+logger = set_up_logger(__name__)
+
+user = 'root'
+password = 'testing'
+port = 3306
+hosy = "127.0.0.1"
+db="capstone"
+charset="utf8"
+
 
 def main():
     ##########################################
