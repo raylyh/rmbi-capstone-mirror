@@ -17,7 +17,8 @@ USER = config['USER']
 PASSWORD = config['PASSWORD']
 PORT = config['PORT']
 HOST = config['HOST']
-DB = config['DB']
+DB1 = config['DB1']
+DB2 = config['DB2']
 
 @app.route("/", methods=["GET", "POST"])
 def initialize():
@@ -31,6 +32,22 @@ def initialize():
 
     nodes, links = get_node_edge(id)
 
+    logger.info('edges {}'.format(len(links)))
+    logger.info('nodes {}'.format(len(nodes)))
+    json_data = dict(nodes=nodes, links=links)
+    logger.info("Success.")
+    return render_template("index.html", customerID=customerID, data=json_data)
+
+@app.route("/testing", methods=["GET", "POST"])
+def initialize2():
+    customerID = None
+    if request.method == "POST":
+        customerID = request.form.get("customerID", None)
+    if customerID:
+        id = int(customerID)
+    else:
+        id = random.randint(1, 297111)  #Problem: 170214, 112790, 234
+
     csv_data = pd.read_csv('./data/data.csv')
     logger.info('Random Customer ID is {} '.format(id))
     customer_list = get_all_relationship(id, csv_data)
@@ -41,7 +58,11 @@ def initialize():
     logger.info(flat_list)
 
     try:
-        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")
+        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB1, charset="utf8")
+        cursor = client.cursor()
+        logger.info('Successful connection to MySQL Database')
+    except pymysql.err.InternalError as e:      # wrong config (kentai and ray have diff db)
+        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB2, charset="utf8")
         cursor = client.cursor()
         logger.info('Successful connection to MySQL Database')
     except Exception as e:

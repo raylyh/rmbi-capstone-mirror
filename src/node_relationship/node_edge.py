@@ -15,12 +15,17 @@ USER = config['USER']
 PASSWORD = config['PASSWORD']
 PORT = config['PORT']
 HOST = config['HOST']
-DB = config['DB']
+DB1 = config['DB1']
+DB2 = config['DB2']
 
 def get_node_edge(customer_id,degree = 6):
     # connect to database
     try:
-        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")
+        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB1, charset="utf8")
+        cursor = client.cursor()
+        logger.info('Successful connection to MySQL Database')
+    except pymysql.err.InternalError as e:      # wrong config (kentai and ray have diff db)
+        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB2, charset="utf8")
         cursor = client.cursor()
         logger.info('Successful connection to MySQL Database')
     except Exception as e:
@@ -77,6 +82,7 @@ def get_node_edge(customer_id,degree = 6):
     client.close()
     return nodes, links
 
+
 def node_relationship(customer_id,df,remove_id = None,degree = None):
 
     # to check whether customer_id is a list or not
@@ -108,6 +114,7 @@ def node_relationship(customer_id,df,remove_id = None,degree = None):
 
     # logger.info('Customer ID {} are found in degree {}'.format(list_of_customer,degree))
     return list_of_customer
+
 
 def get_all_relationship(customer_id,df,degree = 6):
     # ensure the input value is a int
