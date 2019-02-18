@@ -15,3 +15,6 @@ PASSWORD = config['PASSWORD']
 PORT = config['PORT']
 HOST = config['HOST']
 DB = config['DB']
+
+# USE HERE TO INSERT DATA
+# main()

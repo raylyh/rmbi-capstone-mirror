@@ -22,6 +22,9 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-125))
     .force("center", d3.forceCenter(width/2, height/2));
 
+// *****
+// MAIN FUNCTION
+// *****
 function draw(data) {
   // EDGE
   var link = svg.append("g")
