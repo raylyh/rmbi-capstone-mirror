@@ -76,7 +76,7 @@ def insertData(cursor, client):
         cursor.executemany(sql, val)
         client.commit()
         logger.info("Inserted rows:")
-        logger.info(cursor.r="root"owcount)
+        logger.info(cursor.rowcount)
     except Exception as e:
         logger.error(e)
 
