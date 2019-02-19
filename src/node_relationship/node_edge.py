@@ -15,17 +15,12 @@ USER = config['USER']
 PASSWORD = config['PASSWORD']
 PORT = config['PORT']
 HOST = config['HOST']
-DB1 = config['DB1']
-DB2 = config['DB2']
+DB = config['DB']
 
 def get_node_edge(customer_id,degree = 6):
     # connect to database
     try:
-        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB1, charset="utf8")
-        cursor = client.cursor()
-        logger.info('Successful connection to MySQL Database')
-    except pymysql.err.InternalError as e:      # wrong config (kentai and ray have diff db)
-        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB2, charset="utf8")
+        client = pymysql.connect(user=USER, password=PASSWORD, port=PORT, host=HOST, db=DB, charset="utf8")
         cursor = client.cursor()
         logger.info('Successful connection to MySQL Database')
     except Exception as e:

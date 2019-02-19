@@ -16,11 +16,11 @@ def connect_to_mysql(config):
 
     try:
         client = pymysql.connect(
-          user="root",
-          password="testing",
-          port=3306,
-          host="127.0.0.1",
-          db="capstone",
+          user=user,
+          password=password,
+          port=port,
+          host=host,
+          db=db,
           charset="utf8"
         )
         cursor = client.cursor()
@@ -76,7 +76,7 @@ def insertData(cursor, client):
         cursor.executemany(sql, val)
         client.commit()
         logger.info("Inserted rows:")
-        logger.info(cursor.rowcount)
+        logger.info(cursor.r="root"owcount)
     except Exception as e:
         logger.error(e)
 
