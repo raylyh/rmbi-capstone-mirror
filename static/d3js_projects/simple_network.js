@@ -9,6 +9,10 @@ var color = d3.scaleOrdinal(d3.schemeSpectral[7]).domain(degree);
 var weight_degree = [1,2,3,4,5]
 var weight_color = d3.scaleOrdinal(d3.schemeGreys[5]).domain(weight_degree);
 
+var max_degree = document.getElementById("degreeslider").value;
+
+var max_strength = document.getElementById("strenghslider").value;
+
 var svg = d3.select("body").append("svg")
     .attr("class", "canvas")
     .attr("width", width)
@@ -17,21 +21,49 @@ var svg = d3.select("body").append("svg")
     .style("background", "#ffeec8")
     .append("g");
 
+
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
     .force("charge", d3.forceManyBody().strength(-125))
-    .force("center", d3.forceCenter(width/2, height/2));
+    .force("center", d3.forceCenter(width/2, height/2))
+    .alphaTarget(1);
 
 // *****
 // MAIN FUNCTION
 // *****
 function draw(data) {
+
   // EDGE
+  var node_data = [];
+
+  var link_data = [];
+
+  for(var row = 0; row < data.nodes.length; row++) {
+    if (data.nodes[row].group <= max_degree){
+      node_data.push({
+             id: data.nodes[row].id,
+             name: data.nodes[row].name,
+             group: data.nodes[row].group
+         });
+       }
+  }
+
+  for(var row = 0; row < data.links.length; row++) {
+    if (data.links[row].weight <= max_strength){
+      link_data.push({
+        source: data.links[row].source,
+        target: data.links[row].target,
+        weight: data.links[row].weight
+         });
+       }
+  }
+
   var link = svg.append("g")
     .attr("class", "links")
-    .selectAll("line")
-    .data(data.links)
-    .enter().append("g");
+    .selectAll("line");
+
+  link.exit().remove();
+  link = link.data(link_data).enter().append("g");
 
   var line = link.append("line")
     .attr("stroke", function(d) { return weight_color(d.weight); })
@@ -44,11 +76,13 @@ function draw(data) {
     .attr("font-size", 14);
 
   // NODE
+
   var node = svg.append("g") //create a group of node group
     .attr("class", "nodes")
-    .selectAll("g")
-    .data(data.nodes)
-    .enter().append("g");
+    .selectAll("g");
+
+    node.exit().remove();
+    node = node.data(node_data).enter().append("g");
 
   var circle = node.append("circle") //create circle in a node group
     .attr("r", radius)
@@ -65,15 +99,17 @@ function draw(data) {
 
   //FUNCTIONALITY
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
+  showInfo(); //intialize first
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
-  showDegree(); //intialize first
   d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
+  d3.select("#strenghslider").on("change", showStrength);
   d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
 
-  simulation.nodes(data.nodes).on("tick", ticked);
+  simulation.nodes(node_data).on("tick", ticked);
   simulation.force("link").id( function(d) {return d.id;});
-  simulation.force("link").links(data.links);
+  simulation.force("link").links(link_data);
+  simulation.alpha(1).restart();
 
   function ticked() {
     line.attr("x1", function(d) { return d.source.x; })
@@ -98,18 +134,25 @@ function draw(data) {
     }
   }
 
-  function showDegree() {
-    //TODO:
-    //alert(document.getElementById("degreeslider").value);
-    //alert(d3.select(this).node().value);
-
+  function showInfo(){
     var display = "";
     for (var i = 0; i < degree.length; i++) {
       display += "Degree " + i + ":" + node.filter(function(d) { return d.group == i;}).size() + "\t"
     }
     d3.select("#degreeInfo").text(display);
-    //d3.select("#degreeInfo").text(node.size());
   }
+
+  function showDegree(){
+
+    max_degree = document.getElementById("degreeslider").value;
+    draw(data);
+  }
+
+  function showStrength(){
+    max_strength = document.getElementById("strenghslider").value;
+    draw(data);
+  }
+
 }
 
 // FUNCTIONS
