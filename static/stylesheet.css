@@ -22,12 +22,25 @@ h1.wtf {
 }
 
 
+/* ACTUAL CSS IN USE */
+svg.canvas {
+  border: 2px solid black;
+  background: #ffeec8
+}
 
 /* .nodes is descendant selector*/
-
 .nodes circle {
  	stroke: #fff;
- 	stroke-width: 3px;
+ 	stroke-width: 2px;
+}
+
+.links line {
+  stroke-opacity: 0.8;
+}
+
+.links text {
+  fill: #2C4050;
+  font-size: 14;
 }
 
 .slidecontainer {

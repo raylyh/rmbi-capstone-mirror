@@ -1,7 +1,7 @@
 var width = 640,
     height = 400;
 
-var radius = 10;
+var radius = 8;
 
 var degree = [0,1,2,3,4,5,6]
 var current_degree = 6
@@ -14,8 +14,6 @@ var svg = d3.select("body").append("svg")
     .attr("class", "canvas")
     .attr("width", "100%")
     .attr("height", height)
-    .style("border", "2px solid black")
-    .style("background", "#ffeec8")
     .append("g");
 
 // *****
@@ -43,7 +41,6 @@ function draw(data) {
 
   var line = link.append("line")
     .attr("stroke", function(d) { return weight_color(d.weight); })
-    .attr("stroke-opacity", 1.0)
     .attr("stroke-width", function(d) { return d.weight; })
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
@@ -52,8 +49,6 @@ function draw(data) {
 
   var weight = link.append("text") // show weight number of a link
     .text(function(d) { return d.weight;} )
-    .attr("fill", "#2C4050")
-    .attr("font-size", 14)
     .attr("x", function(d) { return (d.source.x+d.target.x)/2; })
     .attr("y", function(d) { return (d.source.y+d.target.y)/2; });
 
@@ -78,30 +73,18 @@ function draw(data) {
     */
   var labels = node.append("text") //create label in a node group
     .text(function(d) { return d.id;})
-    .attr("x", function(d) { return d.x + 20; })
+    .attr("x", function(d) { return d.x + radius; })
     .attr("y", function(d) { return d.y + 5; });
+
 
   //FUNCTIONALITY
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   showDegree(); //intialize first
   d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
-  d3.selectAll("g.nodes g").on("click", clicked); //testing clicking function select all g in g.nodes
+  d3.selectAll("g.nodes g").on("mouseover", clicked); //testing clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
 
-  /* simulation.nodes(data.nodes).on("tick", ticked);
-
-  function ticked() {
-    line.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; })
-
-    d3.selectAll("g.links text").attr("transform", function(d) { return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")"; });
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  }
-  */
-  
   function showWeight() {
     if (d3.select(this).property("checked")) {
       link
