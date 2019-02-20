@@ -19,19 +19,51 @@ var svg = d3.select("body").append("svg")
     .attr("height", "90vh")
     .append("g");
 
+
+var max_degree = 6;
+
+var max_strength = 5;
+
 // *****
 // MAIN FUNCTION
 // *****
 function draw(data) {
   // DEFINE SIMULATION
+
+  var node_data = [];
+
+  var link_data = data['links'];
+
+  var
+  for (var i = 0; i < data['nodes'].length, i++){
+    if (data['nodes'][i]['group'] < max_degree){
+      node_data.push(data['nodes'][i])
+    
+
+
+
+      )
+
+
+
+
+    }
+
+
+
+
+  }
+
+
+
   var simulation = d3.forceSimulation(data.nodes)
-      .force("link", d3.forceLink().id(function(d) { return d.id; }))
-      .force("charge", d3.forceManyBody().strength(-125))
+      .force("link", d3.forceLink(data.links).id(function(d) { return d.id; }))
+      .force("charge", d3.forceManyBody().strength(-125*5))
       .force("center", d3.forceCenter(width/2, height/2))
-      .force("collision", d3.forceCollide(20))
+      .force("collision", d3.forceCollide(radius*2))
       .stop();
-  // link the simulation with data
-  simulation.force("link").links(data.links);
+
+  simulation.force("link").distance(90);
   // pause the simulation to load
   simulation.tick(300);
 
@@ -44,16 +76,16 @@ function draw(data) {
 
   var line = link.append("line")
     .attr("stroke", function(d) { return weight_color(d.weight); })
-    .attr("stroke-width", function(d) { return Math.sqrt(d.weight); })
+    .attr("stroke-width", function(d) { return Math.sqrt(d.weight)/2; })
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
     .attr("x2", function(d) { return d.target.x; })
     .attr("y2", function(d) { return d.target.y; });
 
-  var weight = link.append("text") // show weight number of a link
-    .text(function(d) { return d.weight;} )
-    .attr("x", function(d) { return (d.source.x+d.target.x)/2; })
-    .attr("y", function(d) { return (d.source.y+d.target.y)/2; });
+  // var weight = link.append("text") // show weight number of a link
+  //   .text(function(d) { return d.weight;} )
+  //   .attr("x", function(d) { return (d.source.x+d.target.x)/2; })
+  //   .attr("y", function(d) { return (d.source.y+d.target.y)/2; });
 
 
   // NODE
@@ -78,6 +110,37 @@ function draw(data) {
     .text(function(d) { return d.id;})
     .attr("x", function(d) { return d.x + radius; })
     .attr("y", function(d) { return d.y + 5; });
+
+  // // LABEL
+  // var label = {
+  //     'nodes': [],
+  //     'links': []
+  // };
+  // data.nodes.forEach(function(d, i) {
+  //     label.nodes.push({node: d});
+  //     label.nodes.push({node: d});
+  //     label.links.push({
+  //         source: i * 2,
+  //         target: i * 2 + 1
+  //     });
+  // });
+  // var labelLayout = d3.forceSimulation(label.nodes)
+  //     .force("charge", d3.forceManyBody().strength(-50))
+  //     .force("link", d3.forceLink(label.links).distance(0).strength(2))
+  //     .stop();
+  //
+  // labelLayout.tick(300);
+  //
+  // var labelNode = svg.append("g")
+  //     .attr("class", "labelNodes")
+  //     .selectAll("text")
+  //     .data(label.nodes)
+  //     .enter()
+  //     .append("text")
+  //     .text(function(d, i) { return i % 2 == 0 ? "" : d.node.id; })
+  //     .attr("x", function(d) { return d.node.x; })
+  //     .attr("y", function(d) { return d.node.y; })
+  //     .style("pointer-events", "none"); // to prevent mouseover/drag capture
 
 
   //FUNCTIONALITY
