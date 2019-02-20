@@ -10,10 +10,13 @@ var color = d3.scaleOrdinal(d3.schemeSpectral[7]).domain(degree);
 var weight_degree = [1,2,3,4,5]
 var weight_color = d3.scaleOrdinal(d3.schemeGreys[5]).domain(weight_degree);
 
+var previous_hover_node;
+var previous_click_node;
+
 var svg = d3.select("body").append("svg")
     .attr("class", "canvas")
     .attr("width", "100%")
-    .attr("height", height)
+    .attr("height", "90vh")
     .append("g");
 
 // *****
@@ -30,7 +33,7 @@ function draw(data) {
   // link the simulation with data
   simulation.force("link").links(data.links);
   // pause the simulation to load
-  for (var i = 0; i < 300; ++i) simulation.tick();
+  simulation.tick(300);
 
   // EDGE
   var link = svg.append("g")
@@ -41,7 +44,7 @@ function draw(data) {
 
   var line = link.append("line")
     .attr("stroke", function(d) { return weight_color(d.weight); })
-    .attr("stroke-width", function(d) { return d.weight; })
+    .attr("stroke-width", function(d) { return Math.sqrt(d.weight); })
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
     .attr("x2", function(d) { return d.target.x; })
@@ -82,7 +85,8 @@ function draw(data) {
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   showDegree(); //intialize first
   d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
-  d3.selectAll("g.nodes g").on("mouseover", clicked); //testing clicking function select all g in g.nodes
+  d3.selectAll("g.nodes g").on("mouseover", mouseover); //testing mouseover function select all g in g.nodes
+  d3.selectAll("g.nodes g").on("mousedown", clicked); //testing clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
 
   function showWeight() {
@@ -102,7 +106,6 @@ function draw(data) {
     //TODO: change the degree based on slider value
     current_degree = document.getElementById("degreeslider").value
     // another method: d3.select(this).node().value
-    alert(current_degree);
 
     var display = "";
     for (var i = 0; i <= current_degree; i++) {
@@ -114,10 +117,16 @@ function draw(data) {
 }
 
 // FUNCTIONS
-function clicked(d) {
-  d3.selectAll("g.nodes g circle").attr("fill", function(d) { return color(d.group); });
-  d3.select(this).select("circle").attr("fill", "black"); //turns a clicked node to red
+function mouseover(d) {
+  if (!d3.select(previous_hover_node).empty()) {
+    d3.select(previous_hover_node).classed("hovered", false);
+  }
+  d3.select(this).classed("hovered", true); //turns a hovered node to black
+  previous_hover_node = this;
+  d3.select(this).raise();
+}
 
+function clicked(d) {
   // show the info of clicked node
   var display = "";
   //slice away unwanted keys: index, x, y, vy, vx, fx, fy
@@ -126,6 +135,15 @@ function clicked(d) {
     display += str[i][0] + ":" + str[i][1] + "\t";
   }
   d3.select("#customerInfo").text(display);
+
+  if (d3.select(this).classed("clicked")) {
+    d3.select(this).classed("clicked", false); //turns a clicked node to red
+  }
+  else {
+    d3.select(previous_click_node).classed("clicked", false); // remove previous clicked node attribute
+    d3.select(this).classed("clicked", true);
+    previous_click_node = this;
+  }
 }
 
 function dblclicked(d) {
