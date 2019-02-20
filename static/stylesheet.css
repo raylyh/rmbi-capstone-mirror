@@ -12,37 +12,50 @@ h1 {
  	color : blue;
 }
 
-text {
-   font-family: "Courier New", Courier, monospace;
-}
-
-/* h1.wtf is different from .wtf h1*/
-h1.wtf {
-	color : blue;
-}
-
-
-/* ACTUAL CSS IN USE */
+/* DEDAULT SETTINGS*/
 svg.canvas {
   border: 2px solid black;
   background: #ffeec8
 }
 
 /* .nodes is descendant selector*/
+circle,
 .nodes circle {
- 	stroke: #fff;
+ 	stroke: #666666;
  	stroke-width: 2px;
 }
+.hovered circle {
+  stroke: #DBDBDB;
+}
+.clicked circle {
+  fill: #001C44;
+}
 
+line,
 .links line {
   stroke-opacity: 0.8;
 }
 
+text,
+text {
+  font-size: 14pt;
+  font-family: "Courier New", Courier, monospace;
+}
+.hovered text {
+  font-size: 20pt;
+  font-weight: bold;
+}
 .links text {
   fill: #2C4050;
   font-size: 14;
 }
+.labelNodes text {
+  fill: blue;
+  font-size: 15pt;
+  font-family: "Courier New", Courier, monospace;
+}
 
+/* SLIDER */
 .slidecontainer {
   width: 100%; /* Width of the outside container */
 }

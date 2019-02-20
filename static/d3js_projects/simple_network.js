@@ -20,7 +20,6 @@ var svg = d3.select("body").append("svg")
     .attr("height", height)
     .append("g");
 
-<<<<<<< HEAD
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
@@ -28,26 +27,10 @@ var simulation = d3.forceSimulation()
     .force("center", d3.forceCenter(width/2, height/2))
     .alphaTarget(1);
 
-=======
->>>>>>> bb8b1d717655f6294f6fa6e072875011a38848ff
 // *****
 // MAIN FUNCTION
 // *****
 function draw(data) {
-<<<<<<< HEAD
-=======
-  // DEFINE SIMULATION
-  var simulation = d3.forceSimulation(data.nodes)
-      .force("link", d3.forceLink().id(function(d) { return d.id; }))
-      .force("charge", d3.forceManyBody().strength(-125))
-      .force("center", d3.forceCenter(width/2, height/2))
-      .force("collision", d3.forceCollide(20))
-      .stop();
-  // link the simulation with data
-  simulation.force("link").links(data.links);
-  // pause the simulation to load
-  for (var i = 0; i < 300; ++i) simulation.tick();
->>>>>>> bb8b1d717655f6294f6fa6e072875011a38848ff
 
   // EDGE
   var node_data = [];
@@ -164,16 +147,7 @@ function draw(data) {
     }
   }
 
-<<<<<<< HEAD
   function showInfo(){
-=======
-  function showDegree() {
-    //TODO: change the degree based on slider value
-    current_degree = document.getElementById("degreeslider").value
-    // another method: d3.select(this).node().value
-    alert(current_degree);
-
->>>>>>> bb8b1d717655f6294f6fa6e072875011a38848ff
     var display = "";
     for (var i = 0; i <= current_degree; i++) {
       display += "Degree " + i + ":" + node.filter(function(d) { return d.group == i;}).size() + "\t"
@@ -182,7 +156,6 @@ function draw(data) {
   }
 
   function showDegree(){
-
     max_degree = document.getElementById("degreeslider").value;
     draw(data);
   }
