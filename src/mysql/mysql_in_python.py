@@ -1,145 +1,91 @@
-import pymysql, sys, random, names
-import numpy as np
+import pymysql, random, names
 import pandas as pd
 from src.logger.logger import set_up_logger
+import yaml
 
-__name__ = 'MySQL_Connection'
-logger = set_up_logger(__name__)
+logger = set_up_logger()
 
-user = 'root'
-password = 'testing'
-port = 3306
-hosy = "127.0.0.1"
-db="capstone"
-charset="utf8"
+def connect_to_mysql(config):
+    user = config['USER']
+    password = config['PASSWORD']
+    port = config['PORT']
+    host = config['HOST']
+    db = config['DB']
 
+    logger.info('Connecting to MySQL Database')
 
-def main():
-    ##########################################
-    #       Connect to the database          #
-    ##########################################
-    logger.info('Connecting to MySQL Database...')
     try:
         client = pymysql.connect(
-          user="root",
-          password="testing",
-          port=3306,
-          host="127.0.0.1",
-          db="capstone",
+          user=user,
+          password=password,
+          port=port,
+          host=host,
+          db=db,
           charset="utf8"
         )
         cursor = client.cursor()
         logger.info('Successful connection to MySQL Database')
     except Exception as e:
         logger.error("Fail to connect MySQL Database")
-        logger.error(e)
-        sys.exit(-1)
+        raise ValueError("Please check your config file first")
 
-    while True:
-        print("""
-    ##########################################
-    #                 Options                #
-    #       1. Create Table in MySQL         #
-    #       2. Insert Data into Tables       #
-    #       0. exit                          #
-    ##########################################
-        """)
-        option = input("Please select an option: ")
-
-        if option == "0" or option == "exit":
-            cursor.close()
-            client.close()
-            break
-        elif option == "1":
-            createTable(cursor)
-        elif option == "2":
-            insertData(cursor, client)
-        else:
-            logger.warning("Incorrect option.")
-            continue
-
+    return cursor, client
 
 def createTable(cursor):
-    print("""
-    ##########################################
-    #          Create Table in MySQL         #
-    #       1. Show existing Tables          #
-    #       2. Create CustomerInfo           #
-    #       3. Create CustomerRelationship   #
-    ##########################################
-    """)
-    option = input("Please select an option: ")
+    try:
+        cursor.execute("""CREATE TABLE CustomerInfo (
+            customerID BIGINT, name VARCHAR(100), age INT, gender VARCHAR(20), Address VARCHAR(200),
+            primary key (customerID))""")
+        logger.info("Success in creating CustomerInfo Table")
+    except:
+        logger.info("CustomerInfo Table already exist")
 
-    if option == "1":
-        cursor.execute("SHOW TABLES")
-        for (i,) in cursor.fetchall():
-            logger.info(i)
-            cursor.execute("SHOW COLUMNS FROM " + i)
-            for column in cursor.fetchall():
-                print("{} , type {}".format(column[0], column[1]))
-        logger.info("Success")
-    elif option == "2":
-        try:
-            cursor.execute("""CREATE TABLE CustomerInfo (
-                customerID BIGINT, name VARCHAR(100), age INT, gender VARCHAR(20), Address VARCHAR(200),
-                primary key (customerID))""")
-            logger.info("Success")
-        except Exception as e:
-            logger.error(e)
-    elif option == "3":
-        try:
-            cursor.execute("""CREATE TABLE CustomerRelationship (
-                customerID1 BIGINT, customerID2 BIGINT, weight INT, type INT,
-                foreign key (customerID1) references CustomerInfo(customerID),
-                foreign key (customerID2) references CustomerInfo(customerID))""")
-            logger.info("Success")
-        except Exception as e:
-            logger.error(e)
-    return
-
+    try:
+        cursor.execute("""CREATE TABLE CustomerRelationship (
+            customerID1 BIGINT, customerID2 BIGINT, weight INT, type INT,
+            foreign key (customerID1) references CustomerInfo(customerID),
+            foreign key (customerID2) references CustomerInfo(customerID))""")
+        logger.info("Success in creating CustomerRelationship Table")
+    except:
+        logger.info("CustomerRelationship Table already exist")
 
 def insertData(cursor, client):
-    print("""
-    ##########################################
-    #          Insert Data into Tables       #
-    #       1. Insert CustomerInfo           #
-    #       2. Insert CustomerRelationship   #
-    ##########################################
-    """)
 
-    option = input("Please select an option: ")
+    sql = "INSERT INTO CustomerInfo (customerID, name, age, gender, address) VALUES (%s, %s, %s, %s, %s)"
+    #customerID is in range of [1, 297111]
+    #tuple: (customerID, name, age, gender, address)
+    val = [(i,
+        names.get_full_name(),
+        random.randint(18,80),
+        random.choice(['M','F']),
+        "address"+str(i)) for i in range(1, 297112)]
+    logger.info("Finish generating random customer info")
+    try:
+        cursor.executemany(sql, val)
+        client.commit()
+        logger.info("Inserted rows:")
+        logger.info(cursor.rowcount)
+    except Exception as e:
+        logger.error(e)
 
-    if option == "1":
-        sql = "INSERT INTO CustomerInfo (customerID, name, age, gender, address) VALUES (%s, %s, %s, %s, %s)"
-        #customerID is in range of [1, 297111]
-        #tuple: (customerID, name, age, gender, address)
-        val = [(i,
-            names.get_full_name(),
-            random.randint(18,80),
-            random.choice(['M','F']),
-            "address"+str(i)) for i in range(1, 297112)]
-        logger.info("Finish generating random info")
-        try:
-            cursor.executemany(sql, val)
-            client.commit()
-            logger.info("Inserted rows:")
-            logger.info(cursor.rowcount)
-        except Exception as e:
-            logger.error(e)
+    table = pd.read_csv("data/data.csv", delimiter=',')
+    sql = "INSERT INTO CustomerRelationship (customerID1, customerID2, weight, type) VALUES (%s, %s, %s, %s)"
+    #tuple: (customerID1, customerID2, weight, type)
+    val = list(table.itertuples(index=False, name=None))
+    try:
+        cursor.executemany(sql, val)
+        client.commit()
+        logger.info("Inserted rows:")
+        logger.info(cursor.rowcount)
+    except Exception as e:
+        logger.error(e)
 
-    elif option == "2":
-        with open("data/data.csv") as f:
-            table = pd.read_csv(f, delimiter=',')
-        sql = "INSERT INTO CustomerRelationship (customerID1, customerID2, weight, type) VALUES (%s, %s, %s, %s)"
-        #tuple: (customerID1, customerID2, weight, type)
-        val = list(table.itertuples(index=False, name=None))
-        try:
-            cursor.executemany(sql, val)
-            client.commit()
-            logger.info("Inserted rows:")
-            logger.info(cursor.rowcount)
-        except Exception as e:
-            logger.error(e)
-        return
+    return
 
-main()
+def main():
+    f = open('./config.yml')
+    config = yaml.load(f)
+
+    cursor, client = connect_to_mysql(config)
+    createTable(cursor)
+    insertData(cursor, client)

@@ -10,23 +10,44 @@
 	</head>
 
 	<body>
-		<h1 class="wtf">Capstone Project - Network Visualization</h1>
-		{% if customerID %}
-			Customer ID is {{customerID}}<br>
-		{% else %}
-			Random initialize
-		{% endif %}
+		<h1>Capstone Project - Network Visualization</h1>
+		<div>
+			{% if customerID %}
+				Current ID: {{customerID}}<br>
+			{% else %}
+				Random initialize
+			{% endif %}
+			<form id="searchform" action ="/" method="POST">
+				Customer ID:
+				<input id="searchinput" type="text" name="customerID">
+				<input type="submit" value="submit"><br>
+				<br>
+			</form>
+		</div>
+		<div class="menu">
+			<div class="slidecontainer">
+				<h2>Functions</h2>
+				Degree Slider
+				<br/><input type="range" min="1" max="6" value="6" step="1" class="slider" id=degreeslider>
+			</div>
+			<div class = "strengthchanger">
+				Strength Slider
+				<br/><input type="range" min="1" max="5" value="5" step="1" class="slider" id=strenghslider>
+			</div>
 
-		<form id="searchform" action ="/" method="POST">
-			Customer ID:<br>
-			<input type="text" name="customerID">
-			<input type="submit" name="submit" value="submit"><br>
-			<br>
-		</form>
+			<input type="checkbox" id="showWeight"> Show Weight
+		</div>
+		<div class="info">
+			<h2>Information Panel</h2>
+			<br/><text id=degreeInfo></text>
+			<br/><text id=customerInfo></text>
+		</div>
+		<svg id="viz">
+		</svg>
 	</body>
-
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
+	<!--script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/sliders.js')}}"></script-->
 	<script type="text/javascript">
 		draw({{data|tojson}})
 	</script>
