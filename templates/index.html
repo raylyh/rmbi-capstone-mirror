@@ -27,14 +27,15 @@
 		<div class="menu">
 			<div class="slidecontainer">
 				<h2>Functions</h2>
-				testing - Degree Slider (TODO: add the slider mark)
+				Degree Slider
 				<br/><input type="range" min="1" max="6" value="6" step="1" class="slider" id=degreeslider>
 			</div>
 			<div class = "strengthchanger">
-				testing - Strength Slider (TODO: add the slider mark)
+				Strength Slider
 				<br/><input type="range" min="1" max="5" value="5" step="1" class="slider" id=strenghslider>
 			</div>
-			<input type="checkbox" id="showWeight" checked="checked"> Show Weight
+
+			<input type="checkbox" id="showWeight"> Show Weight
 		</div>
 		<div class="info">
 			<h2>Information Panel</h2>
@@ -44,7 +45,6 @@
 		<svg id="viz">
 		</svg>
 	</body>
-
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
 	<!--script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/sliders.js')}}"></script-->
