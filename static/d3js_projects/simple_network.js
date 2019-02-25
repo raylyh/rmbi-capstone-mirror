@@ -21,8 +21,7 @@ var svg = d3.select("body").append("svg")
 
 
 var max_degree = document.getElementById("degreeslider").value;
-
-var max_strength = document.getElementById("strenghslider").value;
+var min_strength = document.getElementById("strengthslider").value;
 
 // *****
 // MAIN FUNCTION
@@ -38,7 +37,7 @@ function draw(data) {
   var valid_id  = [];
 
   for(var row = 0; row < data.links.length; row++) {
-    if (data.links[row].weight <= max_strength && data.links[row].group <= max_degree){
+    if (data.links[row].weight >= min_strength && data.links[row].group <= max_degree){
       link_data.push({
         // TODO Don't make it so hardcode
         source: data.links[row].source,
@@ -52,7 +51,7 @@ function draw(data) {
   };
 
   var valid_id_set = new Set(valid_id) // + new Set(link_data.target);
-  
+
   for(var row = 0; row < data.nodes.length; row++) {
     if (data.nodes[row].group <= max_degree && valid_id_set.has(data.nodes[row].id)){
       node_data.push({
@@ -126,10 +125,11 @@ function draw(data) {
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   showInfo(); //intialize first
   d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
-  d3.select("#strenghslider").on("change", showStrength);  // testing degree slider to change the degree displayed
+  d3.select("#strengthslider").on("change", showStrength);  // testing degree slider to change the degree displayed
   d3.selectAll("g.nodes g").on("mouseover", mouseover); //testing mouseover function select all g in g.nodes
   d3.selectAll("g.nodes g").on("mousedown", clicked); //testing clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
+  d3.selectAll(".checkboxes label input").on("change", checkboxInfo);
 
   function showWeight() {
     if (d3.select(this).property("checked")) {
@@ -150,6 +150,12 @@ function draw(data) {
       display += "Degree " + i + ":" + node.filter(function(d) { return d.group == i;}).size() + "\t"
     }
     d3.select("#degreeInfo").text(display);
+
+    var display = "";
+    for (var i = 0; i <= 5 - min_strength; i++) {
+      display += "Weight " + (5-i) + ":" + link.filter(function(d) { return d.weight == (5-i);}).size() + "\t"
+    }
+    d3.select("#weightInfo").text(display);
   }
 
   function showDegree(){
@@ -158,7 +164,7 @@ function draw(data) {
   }
 
   function showStrength(){
-    max_strength = document.getElementById("strenghslider").value;
+    min_strength = document.getElementById("strengthslider").value;
     draw(data);
   }
 }
@@ -178,6 +184,25 @@ function clicked(d) {
   var display = "";
   //slice away unwanted keys: index, x, y, vy, vx, fx, fy
   var str = d3.zip(d3.keys(d).slice(0, -5), d3.values(d).slice(0, -5));
+  // create checkboxes
+  console.log(str)
+  var checkboxes = d3.select("#checkboxes").selectAll("input")
+  .data(str)
+  .enter()
+  .append('label')
+    .attr('for',function(d,i){ return d[0]; })
+    .text(function(d) { return d[0]; });
+
+  checkboxes.append("input")
+    .attr("checked", true)
+    .attr("type", "checkbox")
+    .attr("id", function(d,i) { return d[0]; })
+    .attr("onClick", "change(this)");
+
+  checkboxes.append("text")
+    .text('\t');
+
+  // Show info
   for (var i = 0; i < str.length; i++) {
     display += str[i][0] + ":" + str[i][1] + "\t";
   }
@@ -191,6 +216,10 @@ function clicked(d) {
     d3.select(this).classed("clicked", true);
     previous_click_node = this;
   }
+}
+
+function checkboxInfo() {
+  console.log(this)
 }
 
 function dblclicked(d) {

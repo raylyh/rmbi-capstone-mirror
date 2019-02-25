@@ -27,19 +27,24 @@
 		<div class="menu">
 			<div class="slidecontainer">
 				<h2>Functions</h2>
-				Degree Slider
-				<br/><input type="range" min="1" max="6" value="6" step="1" class="slider" id=degreeslider>
+				Degree Slider: Degree <=
+				<output id=degreesliderOutput>6</output>
+				<br/><input type="range" min="1" max="6" value="6" step="1" class="slider" id=degreeslider oninput="degreesliderOutput.value = degreeslider.value">
 			</div>
 			<div class = "strengthchanger">
-				Strength Slider
-				<br/><input type="range" min="1" max="5" value="5" step="1" class="slider" id=strenghslider>
-			</div>
+				Strength Slider: Edge >=
+				<output id=strengthsliderOutput>1</output>
+				<br/><input type="range" min="1" max="5" value="1" step="1" class="slider" id=strengthslider oninput="strengthsliderOutput.value = strengthslider.value">
 
+			</div>
 			<input type="checkbox" id="showWeight"> Show Weight
+			<div class="checkboxes" id="checkboxes">
+				Information Selection:
 		</div>
 		<div class="info">
 			<h2>Information Panel</h2>
 			<br/><text id=degreeInfo></text>
+			<br/><text id=weightInfo></text>
 			<br/><text id=customerInfo></text>
 		</div>
 		<svg id="viz">
