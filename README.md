@@ -3,7 +3,6 @@ Aims to visualize the relationship network of the specified customers.
 
 Enter the database information in **config.yml** before you run the code.
 
-----
 ## User define Function
 1. [logger](#logger)
 2. [Mysql Connection](#mysql-connection)
