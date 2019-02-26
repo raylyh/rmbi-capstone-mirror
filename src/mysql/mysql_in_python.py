@@ -6,21 +6,15 @@ import yaml
 logger = set_up_logger()
 
 def connect_to_mysql(config):
-    user = config['USER']
-    password = config['PASSWORD']
-    port = config['PORT']
-    host = config['HOST']
-    db = config['DB']
-
     logger.info('Connecting to MySQL Database')
 
     try:
         client = pymysql.connect(
-          user=user,
-          password=password,
-          port=port,
-          host=host,
-          db=db,
+          user=config['USER'],
+          password=config['PASSWORD'],
+          port=config['PORT'],
+          host=config['HOST'],
+          db=config['DB'],
           charset="utf8"
         )
         cursor = client.cursor()
