@@ -6,7 +6,8 @@ import pymysql, json, random
 import pandas as pd
 import yaml
 
-logger = set_up_logger('flask_test')
+__name__ = 'flask_test'
+logger = set_up_logger(__name__)
 
 app = Flask(__name__)
 

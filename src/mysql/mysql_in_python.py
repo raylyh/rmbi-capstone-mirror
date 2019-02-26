@@ -2,8 +2,8 @@ import pymysql, random, names
 import pandas as pd
 from src.logger.logger import set_up_logger
 import yaml
-
-logger = set_up_logger()
+__name__ = "MySQL-In-Python"
+logger = set_up_logger(__name__)
 
 def connect_to_mysql(config):
     logger.info('Connecting to MySQL Database')
