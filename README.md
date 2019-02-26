@@ -3,10 +3,16 @@ Aims to visualize the relationship network of the specified customers.
 
 Enter the database information in **config.yml** before you run the code.
 
+## Explanation
+1. [User define Function](#user-define-function)
+2. [Network visualization Website](#network-visualization-website)
+
+----
 ## User define Function
 1. [logger](#logger)
 2. [Mysql Connection](#mysql-connection)
 3. [Node-edge](#node-edge)
+[back](#explanation)
 
 -----
 ### logger
@@ -65,6 +71,7 @@ nodes, links = get_node_edge(id, config)
 2. [html](#html)
 3. [javascript](#javascript)
 4. [css](#css)
+[back](#explanation)
 
 -----
 ### Python-Flask
