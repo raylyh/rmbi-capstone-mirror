@@ -30,42 +30,44 @@ function draw(data) {
   // DEFINE SIMULATION
 
   // EDGE
-  var node_data = [];
+    var temp_node_data = [];
+    var node_data = [];
 
-  var link_data = [];
+    var temp_link_data = [];
+    var link_data = [];
 
-  var valid_id  = [];
+    var valid_id  = [];
 
-  for(var row = 0; row < data.links.length; row++) {
-    if (data.links[row].weight >= min_strength && data.links[row].group <= max_degree){
-      link_data.push({
-        // TODO Don't make it so hardcode
-        source: data.links[row].source,
-        target: data.links[row].target,
-        weight: data.links[row].weight,
-        group : data.links[row].group,
-        type  : data.links[row].type
-         });
-      valid_id.push(data.links[row].source, data.links[row].target);
-       }
-  };
+    for(var row = 0; row < data.links.length; row++) {
+      var row_data = {};
+      if (data.links[row].weight >= min_strength && data.links[row].group <= max_degree){
+        for (var key in data.links[row]) {
+          row_data[key] = data.links[row][key];
+        }
+        temp_link_data.push({row_data});
+        valid_id.push(data.links[row].source, data.links[row].target);
+         }
+    };
+    for (var row = 0; row <temp_link_data.length; row++){
+      link_data[row] = temp_link_data[row].row_data
+    };
 
-  var valid_id_set = new Set(valid_id) // + new Set(link_data.target);
+    var valid_id_set = new Set(valid_id) // + new Set(link_data.target);
 
-  for(var row = 0; row < data.nodes.length; row++) {
-    if (data.nodes[row].group <= max_degree && valid_id_set.has(data.nodes[row].id)){
-      node_data.push({
+    for(var row = 0; row < data.nodes.length; row++) {
+      var row_data = {};
+      if (data.nodes[row].group <= max_degree && valid_id_set.has(data.nodes[row].id)){
+        for (var key in data.nodes[row]) {
+          row_data[key] = data.nodes[row][key];
+        }
+        temp_node_data.push({row_data});
+         }
+    };
+    for (var row = 0; row <temp_node_data.length; row++){
+      node_data[row] = temp_node_data[row].row_data
+    };
 
-        // TODO Don't make it so hardcode
-            address: data.nodes[row].address,
-            age    : data.nodes[row].age,
-            gender : data.nodes[row].gender,
-            id     : data.nodes[row].id,
-            name   : data.nodes[row].name,
-            group  : data.nodes[row].group
-         });
-       }
-  };
+    console.log(node_data); 
 
   svg.selectAll("*").remove();
 
@@ -203,11 +205,19 @@ function clicked(d) {
     .text('\t');
 
   // Show info
+  d3.selectAll("table").data([]).exit().remove();
+  table = d3.select("#customerInfo").append("table")
+  thead = table.append('tr')
+  trow = table.append('tr')
   for (var i = 0; i < str.length; i++) {
-    display += str[i][0] + ":" + str[i][1] + "\t";
+    //display += str[i][0] + ":" + str[i][1] + "\t";
+    thead.append('th').text(str[i][0]);
+    trow.append('td').text(str[i][1]);
   }
-  d3.select("#customerInfo").text(display);
+  //d3.select("#customerInfo").text(display);
 
+
+  // define class for clicked node
   if (d3.select(this).classed("clicked")) {
     d3.select(this).classed("clicked", false); //turns a clicked node to red
   }

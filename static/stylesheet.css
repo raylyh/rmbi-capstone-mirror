@@ -55,6 +55,14 @@ text {
   font-family: "Courier New", Courier, monospace;
 }
 
+table th,
+table td {
+  padding: 15px;
+  text-align: left;
+  font-family: "Courier New", Courier, monospace;
+  border: 1px solid black;
+}
+
 /* SLIDER */
 .slidecontainer {
   width: 100%; /* Width of the outside container */
