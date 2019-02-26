@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify, make_response
-from src.logger.logger import *
-from src.node_relationship.node_edge import *
-from src.mysql.mysql_in_python import *
+from src.logger.logger import set_up_logger
+from src.node_relationship.node_edge import get_node_edge
 import pymysql, json, random
 import pandas as pd
 import yaml
