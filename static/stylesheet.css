@@ -84,7 +84,7 @@ table td {
 
 /* SLIDER */
 .slidecontainer {
-  width: 100%; /* Width of the outside container */
+  width: 500px; /* Width of the outside container */
 }
 
 /* The slider itself */
@@ -122,6 +122,6 @@ table td {
   cursor: pointer; /* Cursor on hover */
 }
 
-.inline-block-child {
+div.inline-block-child {
   display: inline-block;
 }
