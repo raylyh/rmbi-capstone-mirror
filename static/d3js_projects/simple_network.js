@@ -3,11 +3,12 @@ var width = 640,
 
 var radius = 8;
 
-var degree = [0,1,2,3,4,5,6]
-var current_degree = 6
+var degree = [0,1,2,3,4,5,6];
+var degree2 = [Array(7).keys()]
+var current_degree = 6;
 var color = d3.scaleOrdinal(d3.schemeSpectral[7]).domain(degree);
 
-var weight_degree = [1,2,3,4,5]
+var weight_degree = [1,2,3,4,5];
 var weight_color = d3.scaleOrdinal(d3.schemeGreys[5]).domain(weight_degree);
 
 var previous_hover_node;
@@ -28,6 +29,7 @@ var min_strength = document.getElementById("strengthslider").value;
 // *****
 function draw(data) {
   // DEFINE SIMULATION
+  console.log(degree2)
 
   // EDGE
     var temp_node_data = [];
@@ -67,7 +69,7 @@ function draw(data) {
       node_data[row] = temp_node_data[row].row_data
     };
 
-    console.log(node_data); 
+    console.log(node_data);
 
   svg.selectAll("*").remove();
 
