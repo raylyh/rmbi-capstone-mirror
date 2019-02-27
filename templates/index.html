@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<title>Capstone Project</title>
 		<!--CSS-->
+		<link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 		<link href="{{ url_for('static', filename='stylesheet.css')}}" rel="stylesheet" type="text/css">
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
@@ -11,48 +12,46 @@
 
 	<body>
 		<h1>Capstone Project - Network Visualization</h1>
-		<div>
-			{% if customerID %}
-				Current ID: {{customerID}}<br>
-			{% else %}
-				Random initialize
-			{% endif %}
+		<div class="search">
+			<p>
+				{% if customerID %}
+					Current ID: {{customerID}}
+				{% else %}
+					Random network displayed
+				{% endif %}
+			</p>
 			<form id="searchform" action ="/" method="POST">
-				Customer ID:
-				<input id="searchinput" type="text" name="customerID">
-				<input type="submit" value="submit"><br>
-				<br>
+				<span>Please enter Customer ID:&nbsp;</span>
+				<input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
 			</form>
 		</div>
-		<div class="menu">
-			<div class="slidecontainer">
-				<h2>Functions</h2>
-				Degree Slider: Degree <=
-				<output id=degreesliderOutput>6</output>
-				<br/><input type="range" min="1" max="6" value="6" step="1" class="slider" id=degreeslider oninput="degreesliderOutput.value = degreeslider.value">
+		<div class="functionmenu">
+			<h2>Functions</h2>
+			<div class="sliders">
+				<div class="slidecontainer inline-block-child">
+					<p>Degree Slider: Degree <= <span id=degreesliderOutput></span></p>
+					<input type="range" min=1 max=6 value=6 step=1 class="slider" id=degreeslider>
+				</div>
+				<div class="strengthchanger inline-block-child">
+					<p>Strength Slider: Edge >= <span id=strengthsliderOutput></span></p>
+					<input type="range" min=1 max=5 value=1 step=1 class="slider" id=strengthslider>
+				</div>
 			</div>
-			<div class = "strengthchanger">
-				Strength Slider: Edge >=
-				<output id=strengthsliderOutput>1</output>
-				<br/><input type="range" min="1" max="5" value="1" step="1" class="slider" id=strengthslider oninput="strengthsliderOutput.value = strengthslider.value">
-
-			</div>
-			<input type="checkbox" id="showWeight"> Show Weight
 			<div class="checkboxes" id="checkboxes">
-				Information Selection:
+				<h2>Information Selection</h2>
+				<label for="showWeight">Edge weight<input type="checkbox" id="showWeight"></label>
+			</div>
 		</div>
 		<div class="info">
 			<h2>Information Panel</h2>
-			<br/><text id=degreeInfo></text>
+			<text id=degreeInfo></text>
 			<br/><text id=weightInfo></text>
 			<br/><div id=customerInfo></div>
 		</div>
 	</body>
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
-	<!--script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/sliders.js')}}"></script-->
 	<script type="text/javascript">
 		draw({{data|tojson}})
 	</script>
-	<!--script src="d3js_projects/ray.js"/script-->
 </html>

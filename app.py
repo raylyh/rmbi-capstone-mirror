@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, render_template, request
 from src.logger.logger import set_up_logger
 from src.node_relationship.node_edge import get_node_edge
-import pymysql, json, random
-import pandas as pd
+import random
 import yaml
 
 __name__ = '__main__'
@@ -21,14 +20,12 @@ def initialize():
     if customerID:
         id = int(customerID)
     else:
-        id = random.randint(1, 297111)  #Problem: 170214, 112790, 234
+        id = random.randint(1, 297111)  #randomly choose between 1 to 297111 to show a graph
 
+    logger.info('customerID: {}'.format(id))
     nodes, links = get_node_edge(id, config)
 
-    logger.info('edges {}'.format(len(links)))
-    logger.info('nodes {}'.format(len(nodes)))
     json_data = dict(nodes=nodes, links=links)
-    logger.info("Success.")
     return render_template("index.html", customerID=customerID, data=json_data)
 
 if __name__ == '__main__':

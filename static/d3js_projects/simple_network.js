@@ -17,7 +17,7 @@ var previous_click_node;
 var svg = d3.select("body").append("svg")
     .attr("class", "canvas")
     .attr("width", "100%")
-    .attr("height", "90vh")
+    .attr("height", "60vh")
     .append("g");
 
 
@@ -160,6 +160,8 @@ function draw(data) {
       display += "Weight " + (5-i) + ":" + link.filter(function(d) { return d.weight == (5-i);}).size() + "\t"
     }
     d3.select("#weightInfo").text(display);
+    document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
+    document.getElementById("strengthsliderOutput").innerText = document.getElementById("strengthslider").value;
   }
 
   function showDegree(){
@@ -202,9 +204,6 @@ function clicked(d) {
     .attr("type", "checkbox")
     .attr("id", function(d,i) { return d[0]; })
     .attr("onClick", "change(this)");
-
-  checkboxes.append("text")
-    .text('\t');
 
   // Show info
   d3.selectAll("table").data([]).exit().remove();

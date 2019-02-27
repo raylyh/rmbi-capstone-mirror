@@ -1,21 +1,40 @@
 body {
-  background-color: white
+  background-color: white;
+  margin: 50px;
 }
 
+
+
+/* general texts */
+p, span, input[type="text"], h1, h2, label {
+  font-family: "Lato", sans-serif;
+  font-weight: lighter;
+  font-size : 32px;
+  color : black;
+}
 p {
-  font-size : 12pt;
- 	color : black;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
 }
-
 h1 {
- 	font-size : 45pt;
- 	color : blue;
+  font-weight: bolder;
+  font-size : 64px;
+}
+h2 {
+  font-weight: bolder;
+}
+.checkboxes * {
+  font-size: 20px;
 }
 
-/* DEDAULT SETTINGS*/
+label {
+  margin-right: 10px;
+}
+
+/* graphs */
 svg.canvas {
   border: 2px solid black;
-  background: #ffeec8
+  background: #ffeec8;
 }
 
 /* .nodes is descendant selector*/
@@ -101,4 +120,8 @@ table td {
   height: 25px; /* Slider handle height */
   background: #4CAF50; /* Green background */
   cursor: pointer; /* Cursor on hover */
+}
+
+.inline-block-child {
+  display: inline-block;
 }
