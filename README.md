@@ -12,6 +12,7 @@ Enter the database information in **config.yml** before you run the code.
 1. [logger](#logger)
 2. [Mysql Connection](#mysql-connection)
 3. [Node-edge](#node-edge)
+
 [back](#explanation)
 
 -----
@@ -71,6 +72,7 @@ nodes, links = get_node_edge(id, config)
 2. [html](#html)
 3. [javascript](#javascript)
 4. [css](#css)
+
 [back](#explanation)
 
 -----
