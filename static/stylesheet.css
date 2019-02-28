@@ -84,7 +84,8 @@ table td {
 
 /* SLIDER */
 .slidecontainer {
-  width: 500px; /* Width of the outside container */
+  width: 400px; /* Width of the outside container */
+  margin-right: 100px;
 }
 
 /* The slider itself */
@@ -92,8 +93,8 @@ table td {
   -webkit-appearance: none;  /* Override default CSS styles */
   appearance: none;
   width: 400px; /* Full-width */
-  height: 25px; /* Specified height */
-  background: #d3d3d3; /* Grey background */
+  height: 24px; /* Specified height */
+  background: #D3D3D3; /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
   -webkit-transition: .2s; /* 0.2 seconds transition on hover */
@@ -109,17 +110,37 @@ table td {
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none; /* Override default look */
   appearance: none;
-  width: 25px; /* Set a specific slider handle width */
-  height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  width: 24px; /* Set a specific slider handle width */
+  height: 24px; /* Slider handle height */
+  background: #18354E; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
-  width: 25px; /* Set a specific slider handle width */
-  height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  width: 24px; /* Set a specific slider handle width */
+  height: 24px; /* Slider handle height */
+  background: #18354E; /* Green background */
   cursor: pointer; /* Cursor on hover */
+}
+
+.sliderticks {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.sliderticks p {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background: #D3D3D3;
+  width: 0px;
+  height: 0px;
+  line-height: 20px;
+  margin-bottom: 20px;
+  font-size: 20px;
 }
 
 div.inline-block-child {

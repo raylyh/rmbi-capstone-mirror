@@ -173,6 +173,47 @@ function draw(data) {
     min_strength = document.getElementById("strengthslider").value;
     draw(data);
   }
+
+  function clicked(d) {
+    // show the info of clicked node
+    var display = "";
+    //slice away unwanted keys: index, x, y, vy, vx, fx, fy
+    var str = d3.zip(d3.keys(d).slice(0, -5), d3.values(d).slice(0, -5));
+    // create checkboxes
+    console.log(str);
+    var checkboxes = d3.select("#checkboxes").selectAll("input")
+    .data(str)
+    .enter()
+    .append('label')
+      .attr('for',function(d,i){ return d[0]; })
+      .text(function(d) { return d[0]; });
+
+    checkboxes.append("input")
+      .attr("checked", true)
+      .attr("type", "checkbox")
+      .attr("id", function(d,i) { return d[0]; })
+      .attr("onClick", "change(this)");
+
+    // Show info
+    d3.selectAll("table").data([]).exit().remove();
+    table = d3.select("#customerInfo").append("table")
+    thead = table.append('tr')
+    trow = table.append('tr')
+    for (var i = 0; i < str.length; i++) {
+      //display += str[i][0] + ":" + str[i][1] + "\t";
+      thead.append('th').text(str[i][0]);
+      trow.append('td').text(str[i][1]);
+    }
+    // define class for clicked node
+    if (d3.select(this).classed("clicked")) {
+      d3.select(this).classed("clicked", false); //turns a clicked node to red
+    }
+    else {
+      d3.select(previous_click_node).classed("clicked", false); // remove previous clicked node attribute
+      d3.select(this).classed("clicked", true);
+      previous_click_node = this;
+    }
+  }
 }
 
 // FUNCTIONS
@@ -185,49 +226,7 @@ function mouseover(d) {
   d3.select(this).raise();
 }
 
-function clicked(d) {
-  // show the info of clicked node
-  var display = "";
-  //slice away unwanted keys: index, x, y, vy, vx, fx, fy
-  var str = d3.zip(d3.keys(d).slice(0, -5), d3.values(d).slice(0, -5));
-  // create checkboxes
-  console.log(str)
-  var checkboxes = d3.select("#checkboxes").selectAll("input")
-  .data(str)
-  .enter()
-  .append('label')
-    .attr('for',function(d,i){ return d[0]; })
-    .text(function(d) { return d[0]; });
-
-  checkboxes.append("input")
-    .attr("checked", true)
-    .attr("type", "checkbox")
-    .attr("id", function(d,i) { return d[0]; })
-    .attr("onClick", "change(this)");
-
-  // Show info
-  d3.selectAll("table").data([]).exit().remove();
-  table = d3.select("#customerInfo").append("table")
-  thead = table.append('tr')
-  trow = table.append('tr')
-  for (var i = 0; i < str.length; i++) {
-    //display += str[i][0] + ":" + str[i][1] + "\t";
-    thead.append('th').text(str[i][0]);
-    trow.append('td').text(str[i][1]);
-  }
   //d3.select("#customerInfo").text(display);
-
-
-  // define class for clicked node
-  if (d3.select(this).classed("clicked")) {
-    d3.select(this).classed("clicked", false); //turns a clicked node to red
-  }
-  else {
-    d3.select(previous_click_node).classed("clicked", false); // remove previous clicked node attribute
-    d3.select(this).classed("clicked", true);
-    previous_click_node = this;
-  }
-}
 
 function checkboxInfo() {
   console.log(this)
