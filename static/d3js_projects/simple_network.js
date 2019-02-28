@@ -157,18 +157,30 @@ function draw(data) {
 
   function showInfo(){
 
-    var display = "";
-    for (var i = 0; i <= max_degree; i++) {
-      display += "Degree " + i + ":" + node.filter(function(d) { return d.group == i;}).size() + "\t"
-    }
-    d3.select("#degreeInfo").text(display);
-    document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
+    d3.select("#degreeInfo").selectAll("table").data([]).exit().remove();
+    table = d3.select("#degreeInfo").append("table");
+    thead = table.append('tr');
+    trow = table.append('tr');
+    thead.append('th').text("Degree");
+    trow.append('td').text("Count");
 
-    var display = "";
-    for (var i = 0; i <= 5 - min_strength; i++) {
-      display += "Weight " + (5-i) + ":" + link.filter(function(d) { return d.weight == (5-i);}).size() + "\t"
+    for (var i = 0; i <= max_degree; i++) {
+      thead.append('th').text(i);
+      trow.append('td').text(node.filter(function(d) { return d.group == i;}).size());
     }
-    d3.select("#weightInfo").text(display);
+
+    d3.select("#weightInfo").selectAll("table").data([]).exit().remove();
+    table = d3.select("#weightInfo").append("table");
+    thead = table.append('tr');
+    trow = table.append('tr');
+    thead.append('th').text("Weight");
+    trow.append('td').text("Count");
+
+    for (var i = 0; i <= 5 - min_strength; i++) {
+      thead.append('th').text((5-i));
+      trow.append('td').text(link.filter(function(d) { return d.weight == (5-i);}).size());
+    }
+    document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
     document.getElementById("strengthsliderOutput").innerText = document.getElementById("strengthslider").value;
   }
 
@@ -224,9 +236,7 @@ function draw(data) {
       }
     }
 
-    console.log(data);
-
-    d3.selectAll("table").data([]).exit().remove();
+    d3.select("#customerInfo").selectAll("table").data([]).exit().remove();
     table = d3.select("#customerInfo").append("table")
     thead = table.append('tr')
     trow = table.append('tr')
