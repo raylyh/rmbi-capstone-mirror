@@ -23,53 +23,57 @@ var svg = d3.select("body").append("svg")
 
 var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
+var temp_data = null;
 
 // *****
 // MAIN FUNCTION
 // *****
 function draw(data) {
   // DEFINE SIMULATION
-  console.log(degree2)
 
   // EDGE
-    var temp_node_data = [];
-    var node_data = [];
+  var temp_node_data = [];
+  var node_data = [];
 
-    var temp_link_data = [];
-    var link_data = [];
+  var temp_link_data = [];
+  var link_data = [];
 
-    var valid_id  = [];
+  var valid_id  = [];
+  var valid_key = [];
 
-    for(var row = 0; row < data.links.length; row++) {
-      var row_data = {};
-      if (data.links[row].weight >= min_strength && data.links[row].group <= max_degree){
-        for (var key in data.links[row]) {
-          row_data[key] = data.links[row][key];
-        }
-        temp_link_data.push({row_data});
-        valid_id.push(data.links[row].source, data.links[row].target);
-         }
-    };
-    for (var row = 0; row <temp_link_data.length; row++){
-      link_data[row] = temp_link_data[row].row_data
-    };
+  for(var row = 0; row < data.links.length; row++) {
+    var row_data = {};
+    if (data.links[row].weight >= min_strength && data.links[row].group <= max_degree){
+      for (var key in data.links[row]) {
+        row_data[key] = data.links[row][key];
+      }
+      temp_link_data.push({row_data});
+      valid_id.push(data.links[row].source, data.links[row].target);
+       }
+  };
+  for (var row = 0; row <temp_link_data.length; row++){
+    link_data[row] = temp_link_data[row].row_data
+  };
 
-    var valid_id_set = new Set(valid_id) // + new Set(link_data.target);
+  var valid_id_set = new Set(valid_id);
 
-    for(var row = 0; row < data.nodes.length; row++) {
-      var row_data = {};
-      if (data.nodes[row].group <= max_degree && valid_id_set.has(data.nodes[row].id)){
-        for (var key in data.nodes[row]) {
-          row_data[key] = data.nodes[row][key];
-        }
-        temp_node_data.push({row_data});
-         }
-    };
-    for (var row = 0; row <temp_node_data.length; row++){
-      node_data[row] = temp_node_data[row].row_data
-    };
+  for(var row = 0; row < data.nodes.length; row++) {
+    var row_data = {};
+    if (data.nodes[row].group <= max_degree && valid_id_set.has(data.nodes[row].id)){
+      for (var key in data.nodes[row]) {
+        row_data[key] = data.nodes[row][key];
+        valid_key.push(key);
+      }
+      temp_node_data.push({row_data});
+       }
+  };
+  for (var row = 0; row <temp_node_data.length; row++){
+    node_data[row] = temp_node_data[row].row_data
+  };
 
-    console.log(node_data);
+  console.log(node_data);
+  valid_key = new Set(valid_key); // for information selection bar
+  valid_key = Array.from(valid_key); // convert into list
 
   svg.selectAll("*").remove();
 
@@ -110,7 +114,9 @@ function draw(data) {
     .attr("class", "nodes")
     .selectAll("g")
     .data(node_data)
-    .enter().append("g");
+    .enter().append("g")
+    .attr("information",function(d) { return d.id; })
+    .attr("id", "nodeInfo");
 
   var circle = node.append("circle") //create circle in a node group
     .attr("r", radius)
@@ -128,17 +134,18 @@ function draw(data) {
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   showInfo(); //intialize first
+  showCheckBox();
+  checkboxInfo();
   d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
   d3.select("#strengthslider").on("change", showStrength);  // testing degree slider to change the degree displayed
   d3.selectAll("g.nodes g").on("mouseover", mouseover); //testing mouseover function select all g in g.nodes
   d3.selectAll("g.nodes g").on("mousedown", clicked); //testing clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); //testing double click
-  d3.selectAll(".checkboxes label input").on("change", checkboxInfo);
+  d3.selectAll(".TableFilter").on("change", checkboxInfo);
 
   function showWeight() {
     if (d3.select(this).property("checked")) {
-      link
-        .append("text")
+        link.append("text")
         .text(function(d) { return d.weight;} )
         .attr("fill", "#2C4050")
         .attr("font-size", 14)
@@ -149,19 +156,35 @@ function draw(data) {
   }
 
   function showInfo(){
+
     var display = "";
     for (var i = 0; i <= max_degree; i++) {
       display += "Degree " + i + ":" + node.filter(function(d) { return d.group == i;}).size() + "\t"
     }
     d3.select("#degreeInfo").text(display);
+    document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
 
     var display = "";
     for (var i = 0; i <= 5 - min_strength; i++) {
       display += "Weight " + (5-i) + ":" + link.filter(function(d) { return d.weight == (5-i);}).size() + "\t"
     }
     d3.select("#weightInfo").text(display);
-    document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
     document.getElementById("strengthsliderOutput").innerText = document.getElementById("strengthslider").value;
+  }
+
+  function showCheckBox(){
+    var checkboxes = d3.select("#checkboxes").selectAll("input")
+    .data(valid_key)
+    .enter()
+    .append('label')
+      .attr('name',function(d){ return d; })
+      .text(function(d) { return d; });
+
+    checkboxes.append("input")
+      .attr("checked", true)
+      .attr("type", "checkbox")
+      .attr("value", function(d) { return d; })
+      .attr("class", "TableFilter");
   }
 
   function showDegree(){
@@ -174,46 +197,51 @@ function draw(data) {
     draw(data);
   }
 
-  function clicked(d) {
-    // show the info of clicked node
-    var display = "";
-    //slice away unwanted keys: index, x, y, vy, vx, fx, fy
-    var str = d3.zip(d3.keys(d).slice(0, -5), d3.values(d).slice(0, -5));
-    // create checkboxes
-    console.log(str);
-    var checkboxes = d3.select("#checkboxes").selectAll("input")
-    .data(str)
-    .enter()
-    .append('label')
-      .attr('for',function(d,i){ return d[0]; })
-      .text(function(d) { return d[0]; });
+  function checkboxInfo(){
 
-    checkboxes.append("input")
-      .attr("checked", true)
-      .attr("type", "checkbox")
-      .attr("id", function(d,i) { return d[0]; })
-      .attr("onClick", "change(this)");
+    var choices = [];
+    d3.selectAll(".TableFilter").each(function(d){
+      cb = d3.select(this);
+      if(cb.property("checked")){
+        choices.push(cb.property("value"));
+    }});
 
-    // Show info
+    var data = [];
+
+    if (temp_data === null){
+      if(choices.length > 0){
+        for (var i = 0; i < choices.length; i ++){
+            data.push([choices[i],null]);
+          }
+      }
+    } else {
+      for (var i = 0; i <= temp_data.length; i ++){
+        for (var key in temp_data[i]){
+          if (choices.includes(key)){
+            data.push([key,temp_data[i][key]]);
+          }
+        }
+      }
+    }
+
+    console.log(data);
+
     d3.selectAll("table").data([]).exit().remove();
     table = d3.select("#customerInfo").append("table")
     thead = table.append('tr')
     trow = table.append('tr')
-    for (var i = 0; i < str.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       //display += str[i][0] + ":" + str[i][1] + "\t";
-      thead.append('th').text(str[i][0]);
-      trow.append('td').text(str[i][1]);
+      thead.append('th').text(data[i][0]);
+      trow.append('td').text(data[i][1]);
+      }
     }
-    // define class for clicked node
-    if (d3.select(this).classed("clicked")) {
-      d3.select(this).classed("clicked", false); //turns a clicked node to red
+
+    function clicked(d) {
+      temp_data = [];
+      temp_data.push(d);
+      checkboxInfo();
     }
-    else {
-      d3.select(previous_click_node).classed("clicked", false); // remove previous clicked node attribute
-      d3.select(this).classed("clicked", true);
-      previous_click_node = this;
-    }
-  }
 }
 
 // FUNCTIONS
@@ -224,12 +252,6 @@ function mouseover(d) {
   d3.select(this).classed("hovered", true); //turns a hovered node to black
   previous_hover_node = this;
   d3.select(this).raise();
-}
-
-  //d3.select("#customerInfo").text(display);
-
-function checkboxInfo() {
-  console.log(this)
 }
 
 function dblclicked(d) {
