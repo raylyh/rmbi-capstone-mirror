@@ -16,36 +16,28 @@ var svg = d3.select("body").append("svg")
 
 var bbox = d3.select("svg.canvas").node().getBoundingClientRect();
 
-var temp_data = null;
-
 // *****
 // MAIN FUNCTION
 // *****
 function draw(data) {
   // DEFINE SIMULATION
-  link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree);
-  console.log(link_data)
-  valid_id = []
-  for (var i in link_data) {
-    valid_id.push(link_data[i].source);
-    valid_id.push(link_data[i].target);
-    console.log(link_data[i]);
-  }
-  console.log(valid_id);
-  var valid_id_set = new Set(valid_id);
-
-  var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
-  var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values();
-
   svg.selectAll("*").remove();
-
-  var simulation = d3.forceSimulation(node_data)
-      .force("link", d3.forceLink(link_data).id(function(d) { return d.id; }))
+  // INITIALIZE SIMULATION
+  var simulation = d3.forceSimulation(data.nodes)
+      .force("link", d3.forceLink(data.links).id(link => link.id))
       .force("charge", d3.forceManyBody().strength(-125*5))
       .force("center", d3.forceCenter(bbox.width/2, bbox.height/2))
       .force("collision", d3.forceCollide(radius*2))
       .stop();
 
+  // OVERWRITE NEW DATA
+  var link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree);
+  var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id)));
+
+  var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
+  var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
+
+  simulation.nodes(node_data).force("link").links(link_data);
   simulation.force("link").distance(90);
   // pause the simulation to load
   simulation.tick(300);
@@ -87,20 +79,21 @@ function draw(data) {
 
 
   //FUNCTIONALITY
+  showInfo(); //intialize first
+  showCheckBox();
+  checkboxInfo();
+
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
   d3.select("#strengthslider").on("change", showStrength);  // testing degree slider to change the degree displayed
   d3.selectAll(".TableFilter").on("change", checkboxInfo);
-
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   d3.selectAll("g.nodes g").on("mouseover", mouseover); // mouseover function select all g in g.nodes
   d3.selectAll("g.nodes g").on("mousedown", mousedown); // clicking function select all g in g.nodes
   d3.selectAll("g.nodes g").on("dblclick", dblclicked); // double click function
 
-  showInfo(); //intialize first
-  //showCheckBox();
-  //checkboxInfo();
+
 
   function showWeight() {
     if (d3.select(this).property("checked")) {
@@ -156,37 +149,28 @@ function draw(data) {
     .data(valid_key)
     .enter()
     .append('label')
-      .attr('for', key => key)
+      .attr('id', key => key)
       .text(key => key)
     .append("input")
       .attr("id", key => key)
+      .attr("class", "TableFilter")
       .attr("type", "checkbox")
       .attr("checked", true);
   }
 
-  function checkboxInfo(){
-    alert("TEST");
-    var choices = [];
-    d3.selectAll(".TableFilter").each(function(d){
-      cb = d3.select(this);
-      if(cb.property("checked")){
-        choices.push(cb.property("value"));
-    }});
-
+  function checkboxInfo() {
+    var choices = d3.selectAll(".TableFilter").nodes().filter(x => x.checked).map(x => x.id);
     var data = [];
-
-    if (temp_data == null){
-      if(choices.length > 0){
-        for (var i = 0; i < choices.length; i ++){
-            data.push([choices[i],null]);
-          }
+    // no clicked node
+    if (d3.select(".clicked").node() == null) {
+      for (var i = 0; i < choices.length; i++) {
+          data.push([choices[i],null]);
       }
     } else {
-      for (var i = 0; i <= temp_data.length; i ++){
-        for (var key in temp_data[i]){
-          if (choices.includes(key)){
-            data.push([key,temp_data[i][key]]);
-          }
+      var selected_node = d3.select(".clicked").data()[0];
+      for (var key in selected_node) {
+        if (choices.includes(key)){
+          data.push([key,selected_node[key]]);
         }
       }
     }
@@ -199,23 +183,21 @@ function draw(data) {
       //display += str[i][0] + ":" + str[i][1] + "\t";
       thead.append('th').text(data[i][0]);
       trow.append('td').text(data[i][1]);
-      }
     }
+  }
 
-    function mousedown(d) {
-      temp_data = [];
-      temp_data.push(d);
-      checkboxInfo();
-      // define class for clicked node
-      if (d3.select(this).classed("clicked")) {
-        d3.select(this).classed("clicked", false); //turns a clicked node to red
-      }
-      else {
-        d3.select(previous_click_node).classed("clicked", false); // remove previous clicked node attribute
-        d3.select(this).classed("clicked", true);
-        previous_click_node = this;
-      }
+  function mousedown(d) {
+    // define class for clicked node
+    if (d3.select(this).classed("clicked")) {
+      d3.select(this).classed("clicked", false); //turns a clicked node to red
     }
+    else {
+      d3.select(previous_click_node).classed("clicked", false); // remove previous clicked node attribute
+      d3.select(this).classed("clicked", true);
+      previous_click_node = this;
+    }
+    checkboxInfo();
+  }
 }
 
 // FUNCTIONS
