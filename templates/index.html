@@ -2,14 +2,16 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Ken Tai, Ray Leung, Hanrich Chung">
 		<title>Capstone Project</title>
 		<!--CSS-->
-		<link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
-		<link href="{{ url_for('static', filename='stylesheet.css')}}" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300">
+		<link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css')}}" type="text/css">
+		<link rel="icon" href="{{ url_for('static', filename='favicon.ico')}}" type="image/x-icon">
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
 	</head>
-
 	<body>
 		<h1>Capstone Project - Network Visualization</h1>
 		<div class="search">
@@ -21,16 +23,15 @@
 				{% endif %}
 			</p>
 			<form id="searchform" action ="/" method="POST">
-				<span>Please enter Customer ID:&nbsp;</span>
-				<input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
+				Please enter Customer ID: <input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
 			</form>
 		</div>
 		<div class="functionmenu">
 			<h2>Functions</h2>
-			<div class="sliders">
-				<div class="slidecontainer inline-block-child">
-					<p>Degree Slider: Degree <= <span id=degreesliderOutput></span></p>
-					<input id=degreeslider class="slider" type="range" min=1 max=6 value=6 step=1>
+			<div>
+				<div class="slidecontainer">
+					<p>Degree Slider: Degree <= <span id="degreesliderOutput"></span></p>
+					<input id="degreeslider" class="slider" type="range" min=1 max=6 value=6 step=1>
 					<div class="sliderticks">
 						<p>1</p>
 						<p>2</p>
@@ -40,9 +41,9 @@
 						<p>6</p>
 					</div>
 				</div>
-				<div class="strengthchanger inline-block-child">
-					<p>Strength Slider: Edge >= <span id=strengthsliderOutput></span></p>
-					<input id=strengthslider class="slider" type="range" min=1 max=5 value=1 step=1>
+				<div class="slidecontainer">
+					<p>Weight Slider: Edge >= <span id="strengthsliderOutput"></span></p>
+					<input id="strengthslider" class="slider" type="range" min=1 max=5 value=1 step=1>
 					<div class="sliderticks">
 						<p>1</p>
 						<p>2</p>
@@ -52,20 +53,21 @@
 					</div>
 				</div>
 			</div>
-
 			<h2>Information Selection</h2>
-			<div class="checkbox_for_weight" id="checkbox_for_weight">
-				<label for="showWeight">Edge: Edge weight<input type="checkbox" id="showWeight"></label>
-			</div>
-			<div class="checkboxes" id="checkboxes">
-				<label>Node:</label>
+			<div id="checkboxes">
+				<span>Edge:</span>
+				<label for="showWeight">Edge weight</label>
+				<input id="showWeight" type="checkbox">
+				<div id="nodecheckboxes">
+					<span>Node:</span>
+				</div>
 			</div>
 		</div>
 		<div class="info">
 			<h2>Information Panel</h2>
-			<text id=degreeInfo></text>
-			<br/><text id=weightInfo></text>
-			<br/><div id=customerInfo></div>
+			<div id="degreeInfo" class="infocontainer"></div>
+			<div id="weightInfo" class="infocontainer"></div>
+			<div id="customerInfo" class="infocontainer"></div>
 		</div>
 	</body>
 	<!--location to my script-->

@@ -6,11 +6,11 @@ body {
 
 
 /* general texts */
-p, span, input[type="text"], h1, h2, label {
+p, span, input[type="text"], h1, h2, label, form {
   font-family: "Lato", sans-serif;
   font-weight: lighter;
-  font-size : 32px;
-  color : black;
+  font-size: 32px;
+  color: black;
 }
 p {
   margin-top: 0.2em;
@@ -18,18 +18,17 @@ p {
 }
 h1 {
   font-weight: bolder;
-  font-size : 64px;
+  font-size: 64px;
 }
 h2 {
   font-weight: bolder;
+  margin-bottom: 0.5em;
 }
-.checkboxes * {
+label, .checkboxes * {
   font-size: 20px;
 }
-
-label {
-  font-size: 20px;
-  margin-right: 10px;
+input[type="checkbox"] {
+  margin-right: 0.9em;
 }
 
 /* graphs */
@@ -83,10 +82,16 @@ table td {
   border: 1px solid black;
 }
 
+.infocontainer {
+  margin-right: 100px;
+  display: inline-block;
+}
+
 /* SLIDER */
 .slidecontainer {
   width: 400px; /* Width of the outside container */
   margin-right: 100px;
+  display: inline-block;
 }
 
 /* The slider itself */
@@ -127,8 +132,8 @@ table td {
 .sliderticks {
   display: flex;
   justify-content: space-between;
-  padding-left: 12px;
-  padding-right: 12px;
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 .sliderticks p {
@@ -142,8 +147,4 @@ table td {
   line-height: 20px;
   margin-bottom: 20px;
   font-size: 20px;
-}
-
-div.inline-block-child {
-  display: inline-block;
 }
