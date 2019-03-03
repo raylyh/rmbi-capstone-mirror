@@ -13,10 +13,13 @@ var svg = d3.select("body").append("svg")
     .attr("width", "100%")
     .attr("height", "60vh")
     .append("g");
+var link = svg.append("g")  // 'link' needs to be declared before 'node'
+  .attr("class", "links");  // so that link is below node in graph
 var node = svg.append("g")
   .attr("class", "nodes");
-var link = svg.append("g")
-  .attr("class", "links");
+
+
+var t = svg.transition().duration(750);
 
 var bbox = d3.select("svg.canvas").node().getBoundingClientRect();
 
@@ -46,77 +49,87 @@ function draw(data) {
     simulation.tick(300);
     first_run = false;
   }
-  // DRAW NODE
-  node.selectAll("g")
-    .data(node_data, d => d.id)
-    .join(
-      enter => enter.append("g")
-        .attr("id", d => d.id)
-      .append("circle") //create circle in a node group
-        .attr("r", radius)
-        .attr("fill", d => color_degree(d.group))
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-      .append("text") //create label in a node group
-        .text(d => d.id)
-        .attr("x", d => d.x + radius)
-        .attr("y", d => d.y + 5)
-    );
 
   // DRAW EDGE
   link.selectAll("g")
     .data(link_data, d => d.source.id + '-' + d.target.id)
     .join(
-      enter => enter.append("g")
-        .attr("id", d => d.source.id + '-' + d.target.id)
+      enter => enter.append("g").attr("id", d => d.source.id + '-' + d.target.id)
       .append("line")
-        .attr("stroke", d => color_weight(d.weight))
-        .attr("stroke-width", d => Math.sqrt(d.weight)/2)
         .attr("x1", d => d.source.x)
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y)
+      .call(enter => enter.transition(t)  //animation
+        .attr("stroke", d => color_weight(d.weight))
+        .attr("stroke-width", d => Math.sqrt(d.weight)/2)),
+      update => update,
+      exit => exit
+      .call(exit => exit.select("line").transition(t)
+        .attr("stroke-width", 0))
+      .transition(t).remove()
+    );
+
+  // DRAW NODE
+  node.selectAll("g")
+    .data(node_data, d => d.id)
+    .join(
+      enter => enter.append("g").attr("id", d => d.id)
+      .call(enter => {
+        enter.append("circle") //create circle in a node group
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y)
+        .call(enter => enter.transition(t)  //animation
+          .attr("r", radius)
+          .attr("fill", d => color_degree(d.group)));
+        enter.append("text") //create label in a node group
+          .text(d => d.id)
+          .attr("x", d => d.x + radius)
+          .attr("y", d => d.y + 5)
+        .call(enter => enter.transition(t)  //animation
+          .attr("opacity", 1.0));
+        }),
+      update => update,
+      exit => exit  // delete animation
+      .call(exit => {
+        exit.select("circle").transition(t).attr("r", 0);
+        exit.select("text").transition(t).attr("opacity", 0);
+      })
+      .transition(t).remove()
     );
 
   //FUNCTIONALITY
-  showWeight();
   showInfo(); //intialize first
-  showCheckBox();
-  checkboxInfo();
 
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
-  d3.select("#degreeslider").on("change", showDegree); // testing degree slider to change the degree displayed
-  d3.select("#strengthslider").on("change", showStrength);  // testing degree slider to change the degree displayed
-  d3.selectAll(".TableFilter").on("change", checkboxInfo);
+  d3.selectAll("#degreeslider, #strengthslider").on("change", sliderChange); // testing degree slider to change the degree displayed
+  d3.selectAll(".TableFilter").on("change", changeCheckboxInfo);
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
-  d3.selectAll("g.nodes g").on("mouseover", mouseover); // mouseover function select all g in g.nodes
-  d3.selectAll("g.nodes g").on("mousedown", mousedown); // clicking function select all g in g.nodes
-  d3.selectAll("g.nodes g").on("dblclick", dblclicked); // double click function
-
+  // hover, click, and double-click on a node
+  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked);
 
 
   function showWeight() {
     if (d3.select("#showWeight").property("checked")) {
       link.selectAll("g").append("text")
-        .text(edge => edge.weight)
-        .attr("transform", function(d) { return "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")"; });
+        .text(d => d.weight)
+        .attr("transform", d => "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")")
+        .call(enter => enter.transition(t).attr('opacity', 1));
     } else {
-      d3.selectAll("g.links").selectAll("text").remove();
+      d3.selectAll("g.links").selectAll("text")
+        .call(exit => exit.transition(t).attr('opacity', 0).remove());
     }
   }
-  function showDegree(){
+  function sliderChange() {
     max_degree = document.getElementById("degreeslider").value;
-    draw(data);
-  }
-  function showStrength(){
     min_strength = document.getElementById("strengthslider").value;
     draw(data);
   }
 
-  function showInfo(){
+  function showInfo() {
     d3.select("#degreeInfo").selectAll("table").remove();
-    // DEGREE INFO
+    // DEGREE INFO TABLE
     table = d3.select("#degreeInfo").append("table");
     thead = table.append('tr');
     trow = table.append('tr');
@@ -129,7 +142,7 @@ function draw(data) {
     }
 
     d3.select("#weightInfo").selectAll("table").remove();
-    // WEIGHT INFO
+    // WEIGHT INFO TABLE
     table = d3.select("#weightInfo").append("table");
     thead = table.append('tr');
     trow = table.append('tr');
@@ -140,8 +153,13 @@ function draw(data) {
       thead.append('th').text((5-i));
       trow.append('td').text(link.selectAll("g").filter(d => d.weight == 5-i).size());
     }
+    // UPDATE DEGREE AND STRENGTH OUTPUT IN HTML
     document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
     document.getElementById("strengthsliderOutput").innerText = document.getElementById("strengthslider").value;
+    // UPDATE ALL FUNCTIONALITY: EDGE WEIGHT SHOWN, POSSIBLE CHECKBOX
+    showWeight();
+    showCheckBox();
+    changeCheckboxInfo();
   }
 
   function showCheckBox(){
@@ -158,7 +176,7 @@ function draw(data) {
       .attr("checked", true);
   }
 
-  function checkboxInfo() {
+  function changeCheckboxInfo() {
     var choices = d3.selectAll(".TableFilter").nodes().filter(x => x.checked).map(x => x.id);
     var data = [];
     // no clicked node
@@ -196,7 +214,7 @@ function draw(data) {
       d3.select(this).classed("clicked", true);
       previous_click_node = this;
     }
-    checkboxInfo();
+    changeCheckboxInfo();
   }
 }
 

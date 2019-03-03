@@ -64,15 +64,6 @@ text {
   font-size: 20pt;
   font-weight: bold;
 }
-.links text {
-  fill: #2C4050;
-  font-size: 14;
-}
-.labelNodes text {
-  fill: blue;
-  font-size: 15pt;
-  font-family: "Courier New", Courier, monospace;
-}
 
 table th,
 table td {
