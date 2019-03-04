@@ -3,6 +3,15 @@ Aims to visualize the relationship network of the specified customers.
 
 Enter the database information in **config.yml** before you run the code.
 
+**Format Of config.yml**
+```
+USER : "root"
+PASSWORD : "testing"
+PORT : 3306
+HOST : "127.0.0.1"
+DB : "capstone"
+```
+
 ## Explanation
 1. [User define Function](#user-define-function)
 2. [Network visualization Website](#network-visualization-website)

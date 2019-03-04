@@ -42,7 +42,6 @@ function draw(data) {
   var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id)));
   var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
-
   simulation.nodes(node_data).force("link").links(link_data);
   // pause the simulation to load for the FIRST time
   if (first_run) {
@@ -107,7 +106,7 @@ function draw(data) {
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   // hover, click, and double-click on a node
-  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked);
+  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mouseout", mouseout);
 
 
   function showWeight() {
@@ -133,12 +132,11 @@ function draw(data) {
     table = d3.select("#degreeInfo").append("table");
     thead = table.append('tr');
     trow = table.append('tr');
-
     thead.append('th').text("Degree");
     trow.append('td').text("Count");
     for (var i = 0; i <= max_degree; i++) {
       thead.append('th').text(i);
-      trow.append('td').text(node.selectAll("g").filter(d => d.group == i).size());
+      trow.append('td').text(node.selectAll("g").data().filter(d => d.group == i).length);
     }
 
     d3.select("#weightInfo").selectAll("table").remove();
@@ -151,7 +149,7 @@ function draw(data) {
     trow.append('td').text("Count");
     for (var i = 0; i <= 5 - min_strength; i++) {
       thead.append('th').text((5-i));
-      trow.append('td').text(link.selectAll("g").filter(d => d.weight == 5-i).size());
+      trow.append('td').text(link.selectAll("g").data().filter(d => d.weight == 5-i).length);
     }
     // UPDATE DEGREE AND STRENGTH OUTPUT IN HTML
     document.getElementById("degreesliderOutput").innerText = document.getElementById("degreeslider").value;
@@ -216,18 +214,59 @@ function draw(data) {
     }
     changeCheckboxInfo();
   }
+
+  function mouseover(d) {
+    if (!d3.select(previous_hover_node).empty()) {
+      d3.select(previous_hover_node).classed("hovered", false);
+    }
+    d3.select(this).classed("hovered", true); //turns a hovered node to black
+    previous_hover_node = this;
+    d3.select(this).raise();  // put the hovered element as first element
+
+    var current_id = d.id;
+
+    var opacity_link_data = link.selectAll("g").data().filter(link => link.source.id == current_id || link.target.id == current_id);
+
+    var opacity_link = [];
+    for (var i in opacity_link_data){
+      opacity_link.push([opacity_link_data[i].source.id, opacity_link_data[i].target.id]);
+    }
+
+    var adjlist = [];
+    for (var row = 0; row < opacity_link.length; row ++){
+      if (opacity_link[row][0] <= opacity_link[row][1]){
+        adjlist.push([opacity_link[row][1] + '-' + opacity_link[row][0]]);
+      } else {
+        adjlist.push([opacity_link[row][0] + '-' + opacity_link[row][1]]);
+      }
+
+    }
+
+    link.selectAll("g").select("line").style("stroke-width", 0.1);
+    link.selectAll("g").select("text").style("opacity", 0.1);
+    node.selectAll("g").select("circle").style("opacity", 0.1);
+    node.selectAll("g").select("text").style("opacity", 0.1);
+
+    for (var num in adjlist){
+      d3.select("g[id='" + adjlist[num] + "']").select("line").style("stroke-width", 1);
+      d3.select("g[id='" + adjlist[num] + "']").select("text").style("opacity", 1);
+    }
+
+    for (var num in opacity_link.flat()){
+      d3.select("g[id='" + opacity_link.flat()[num] + "']").select("circle").style("opacity", 1);
+      d3.select("g[id='" + opacity_link.flat()[num] + "']").select("text").style("opacity", 1);
+    }
+  }
+
+  function mouseout(d){
+    node.selectAll("circle").style("opacity", 1);
+    link.selectAll("line").style("stroke-width", 1);
+    d3.selectAll('text').style("opacity", 1);
+  }
+
 }
 
 // FUNCTIONS
-function mouseover(d) {
-  if (!d3.select(previous_hover_node).empty()) {
-    d3.select(previous_hover_node).classed("hovered", false);
-  }
-  d3.select(this).classed("hovered", true); //turns a hovered node to black
-  previous_hover_node = this;
-  d3.select(this).raise();  // put the hovered element as first element
-}
-
 function dblclicked(d) {
   //double-clicked circle then update the submit form
   d3.select("#searchinput").property("value", d.id);

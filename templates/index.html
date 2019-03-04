@@ -69,6 +69,23 @@
 			<div id="weightInfo" class="infocontainer"></div>
 			<div id="customerInfo" class="infocontainer"></div>
 		</div>
+		<div class="sosc">
+			<h2>Centrality Measurement</h2>
+			<div id = "colorbar" style = "width:600px">
+				<div class="text-right" style="float:right">Most Central</div>
+				<div>Least Central</div>
+				<svg width="1800" height="40">
+					<defs>
+						<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="pad">
+							<stop offset="0%" stop-color="black" stop-opacity="1"></stop>
+							<stop offset="100%" stop-color="red" stop-opacity="1"></stop>
+						</linearGradient>
+					</defs>
+					<rect width="600" height="40" style="fill: url("#gradient");">
+					</rect>
+				</svg>
+			</div>
+		</div>
 	</body>
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
