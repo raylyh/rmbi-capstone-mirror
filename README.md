@@ -1,28 +1,45 @@
 # RMBI-Capstone
-Aims to visualize the relationship network of the specified customers.
+This project aims to visualize the relationship network of customer clusters in a webpage.
+A specific customer can be searched and its ego-network is visualized correspondingly.
 
 Enter the database information in **config.yml** before you run the code.
 
-**Format Of config.yml**
+**Format of config.yml**
 ```
-USER : "root"
-PASSWORD : "testing"
+USER : "your_username"
+PASSWORD : "your_password"
 PORT : 3306
 HOST : "127.0.0.1"
-DB : "capstone"
+DB : "your_database"
 ```
 
-## Explanation
-1. [User define Function](#user-define-function)
-2. [Network visualization Website](#network-visualization-website)
+## Contents
+1. [MySQL Database Schema](#mysql-database-schema)
+1. [User Define Function](#user-define-function)
+2. [Network Visualization Website](#network-visualization-website)
 
+----
+
+## MySQL Database Schema
+The database containing the relationship data should have the following tables and their corresponding schema.
+```
++----------------------+
+| Tables_in_capstone   |
++----------------------+
+| CustomerInfo         |
+| CustomerRelationship |
++----------------------+
+
+```
+
+[back](#contents)
 ----
 ## User define Function
 1. [logger](#logger)
 2. [Mysql Connection](#mysql-connection)
 3. [Node-edge](#node-edge)
 
-[back](#explanation)
+[back](#contents)
 
 -----
 ### logger
@@ -82,7 +99,7 @@ nodes, links = get_node_edge(id, config)
 3. [javascript](#javascript)
 4. [css](#css)
 
-[back](#explanation)
+[back](#contents)
 
 -----
 ### Python-Flask
