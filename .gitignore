@@ -109,3 +109,6 @@ __pycache__/
 
 # ignore development python by ken
 development.py
+
+# ignore yml file
+*.yml

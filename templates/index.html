@@ -2,33 +2,104 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Ken Tai, Ray Leung, Hanrich Chung">
 		<title>Capstone Project</title>
 		<!--CSS-->
-		<link href="{{ url_for('static', filename='stylesheet.css')}}" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300">
+		<link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css')}}" type="text/css">
+		<link rel="icon" href="{{ url_for('static', filename='favicon.ico')}}" type="image/x-icon">
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
 	</head>
-
 	<body>
-		<h1 class="wtf">Capstone Project - Network Visualization</h1>
-		{% if customerID %}
-			Customer ID is {{customerID}}<br>
-		{% else %}
-			Random initialize
-		{% endif %}
-
-		<form id="searchform" action ="/" method="POST">
-			Customer ID:<br>
-			<input type="text" name="customerID">
-			<input type="submit" name="submit" value="submit"><br>
-			<br>
-		</form>
+		<h1>Capstone Project - Network Visualization</h1>
+		<div class="search">
+			<p>
+				{% if customerID %}
+					Current ID: {{customerID}}
+				{% else %}
+					Random network displayed
+				{% endif %}
+			</p>
+			<form id="searchform" action ="/" method="POST">
+				Please enter Customer ID: <input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
+			</form>
+		</div>
+		<div class="functionmenu">
+			<h2>Functions</h2>
+			<div>
+				<div class="slidecontainer">
+					<p>Degree Slider: Degree <= <span id="degreesliderOutput"></span></p>
+					<input id="degreeslider" class="slider" type="range" min=1 max=6 value=6 step=1>
+					<div class="sliderticks">
+						<p>1</p>
+						<p>2</p>
+						<p>3</p>
+						<p>4</p>
+						<p>5</p>
+						<p>6</p>
+					</div>
+				</div>
+				<div class="slidecontainer">
+					<p>Weight Slider: Edge >= <span id="strengthsliderOutput"></span></p>
+					<input id="strengthslider" class="slider" type="range" min=1 max=5 value=1 step=1>
+					<div class="sliderticks">
+						<p>1</p>
+						<p>2</p>
+						<p>3</p>
+						<p>4</p>
+						<p>5</p>
+					</div>
+				</div>
+			</div>
+			<h2>Information Selection</h2>
+			<div id="checkboxes">
+				<span>Edge:</span>
+				<label for="showWeight">Edge weight</label>
+				<input id="showWeight" type="checkbox">
+				<div id="nodecheckboxes">
+					<span>Node:</span>
+				</div>
+			</div>
+		</div>
+		<div class="info">
+			<h2>Information Panel</h2>
+			<div id="degreeInfo" class="infocontainer"></div>
+			<div id="weightInfo" class="infocontainer"></div>
+			<div id="customerInfo" class="infocontainer"></div>
+		</div>
+		<div class="sosc">
+			<h2>Centrality Measurement</h2>
+			<div id="colorbar" style="width:600px">
+			                <div class="text-right" style="float:right">Most Central</div>
+			                <div>Least Central</div>
+			              <svg width="600" height="40">
+											<defs>
+												<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="pad">
+													<stop offset="0%" stop-color="black" stop-opacity="1"></stop>
+													<stop offset="100%" stop-color="red" stop-opacity="1"></stop>
+												</linearGradient>
+											</defs>
+											<rect width="600" height="40" style="fill: url(&quot;#gradient&quot;);"></rect>
+										</svg>
+									</div>
+			<div class="row">
+              <div class="col-xs-8 text-center">
+                  <p style="margin-bottom:.1em">Centrality type:</p>
+                  <div class="btn-group" role="group">
+                  <button id="deg" onclick="btntog('#deg')" type="button" class="btn btn-default active">Degree</button>
+                  <button id="clo" onclick="btntog('#clo')" type="button" class="btn btn-default">Closeness</button>
+                  <button id="bet" onclick="btntog('#bet')" type="button" class="btn btn-default">Betweenness</button>
+                  <button id="eig" onclick="btntog('#eig')" type="button" class="btn btn-default">Eigenvector</button>
+                    </div>
+             </div>
+      </div>
+		</div>
 	</body>
-
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
 	<script type="text/javascript">
 		draw({{data|tojson}})
 	</script>
-	<!--script src="d3js_projects/ray.js"/script-->
 </html>
