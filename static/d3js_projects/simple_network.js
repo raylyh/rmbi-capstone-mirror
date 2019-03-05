@@ -41,6 +41,7 @@ function draw(data) {
   var link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree);
   var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id)));
   var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
+  var current_customer_info = data.nodes.filter(node => node.group == 0)[0];
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
   simulation.nodes(node_data).force("link").links(link_data);
   // pause the simulation to load for the FIRST time
@@ -186,7 +187,7 @@ function draw(data) {
       var selected_node = d3.select(".clicked").data()[0];
       for (var key in selected_node) {
         if (choices.includes(key)){
-          data.push([key,selected_node[key]]);
+          data.push([choices[i],current_customer_info[choices[i]]]);
         }
       }
     }
