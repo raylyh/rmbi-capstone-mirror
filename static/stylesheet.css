@@ -1,21 +1,40 @@
 body {
-  background-color: white
+  background-color: white;
+  margin: 50px;
 }
 
+
+
+/* general texts */
+p, span, input[type="text"], h1, h2, label, form {
+  font-family: "Lato", sans-serif;
+  font-weight: lighter;
+  font-size: 32px;
+  color: black;
+}
 p {
-  font-size : 12pt;
- 	color : black;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
 }
-
 h1 {
- 	font-size : 45pt;
- 	color : blue;
+  font-weight: bolder;
+  font-size: 64px;
+}
+h2 {
+  font-weight: bolder;
+  margin-bottom: 0.5em;
+}
+label, .checkboxes * {
+  font-size: 20px;
+}
+input[type="checkbox"] {
+  margin-right: 0.9em;
 }
 
-/* DEDAULT SETTINGS*/
+/* graphs */
 svg.canvas {
   border: 2px solid black;
-  background: #ffeec8
+  background: #ffeec8;
 }
 
 /* .nodes is descendant selector*/
@@ -45,19 +64,25 @@ text {
   font-size: 20pt;
   font-weight: bold;
 }
-.links text {
-  fill: #2C4050;
-  font-size: 14;
-}
-.labelNodes text {
-  fill: blue;
-  font-size: 15pt;
+
+table th,
+table td {
+  padding: 15px;
+  text-align: left;
   font-family: "Courier New", Courier, monospace;
+  border: 1px solid black;
+}
+
+.infocontainer {
+  margin-right: 100px;
+  display: inline-block;
 }
 
 /* SLIDER */
 .slidecontainer {
-  width: 100%; /* Width of the outside container */
+  width: 400px; /* Width of the outside container */
+  margin-right: 100px;
+  display: inline-block;
 }
 
 /* The slider itself */
@@ -65,8 +90,8 @@ text {
   -webkit-appearance: none;  /* Override default CSS styles */
   appearance: none;
   width: 400px; /* Full-width */
-  height: 25px; /* Specified height */
-  background: #d3d3d3; /* Grey background */
+  height: 24px; /* Specified height */
+  background: #D3D3D3; /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
   -webkit-transition: .2s; /* 0.2 seconds transition on hover */
@@ -82,15 +107,35 @@ text {
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none; /* Override default look */
   appearance: none;
-  width: 25px; /* Set a specific slider handle width */
-  height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  width: 24px; /* Set a specific slider handle width */
+  height: 24px; /* Slider handle height */
+  background: #18354E; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
-  width: 25px; /* Set a specific slider handle width */
-  height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  width: 24px; /* Set a specific slider handle width */
+  height: 24px; /* Slider handle height */
+  background: #18354E; /* Green background */
   cursor: pointer; /* Cursor on hover */
+}
+
+.sliderticks {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.sliderticks p {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background: #D3D3D3;
+  width: 0px;
+  height: 0px;
+  line-height: 20px;
+  margin-bottom: 20px;
+  font-size: 20px;
 }

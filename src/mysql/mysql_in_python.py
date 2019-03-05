@@ -1,35 +1,29 @@
+from src.logger.logger import set_up_logger
 import pymysql, random, names
 import pandas as pd
-from src.logger.logger import set_up_logger
 import yaml
 
-logger = set_up_logger()
+__name__ = "MySQL-In-Python"
+logger = set_up_logger(__name__)
 
 def connect_to_mysql(config):
-    user = config['USER']
-    password = config['PASSWORD']
-    port = config['PORT']
-    host = config['HOST']
-    db = config['DB']
-
-    logger.info('Connecting to MySQL Database')
-
     try:
         client = pymysql.connect(
-          user=user,
-          password=password,
-          port=port,
-          host=host,
-          db=db,
+          user=config['USER'],
+          password=config['PASSWORD'],
+          port=config['PORT'],
+          host=config['HOST'],
+          db=config['DB'],
           charset="utf8"
         )
         cursor = client.cursor()
         logger.info('Successful connection to MySQL Database')
     except Exception as e:
-        logger.error("Fail to connect MySQL Database")
+        logger.error("Failed to connect to MySQL Database - {}".format(e))
         raise ValueError("Please check your config file first")
 
     return cursor, client
+
 
 def createTable(cursor):
     try:
@@ -37,20 +31,19 @@ def createTable(cursor):
             customerID BIGINT, name VARCHAR(100), age INT, gender VARCHAR(20), Address VARCHAR(200),
             primary key (customerID))""")
         logger.info("Success in creating CustomerInfo Table")
-    except:
-        logger.info("CustomerInfo Table already exist")
-
+    except Exception as e:
+        logger.error("CustomerInfo Table already exist - {}".format(e))
     try:
         cursor.execute("""CREATE TABLE CustomerRelationship (
             customerID1 BIGINT, customerID2 BIGINT, weight INT, type INT,
             foreign key (customerID1) references CustomerInfo(customerID),
             foreign key (customerID2) references CustomerInfo(customerID))""")
         logger.info("Success in creating CustomerRelationship Table")
-    except:
-        logger.info("CustomerRelationship Table already exist")
+    except Exception as e:
+        logger.error("CustomerRelationship Table already exist - {}".format(e))
+
 
 def insertData(cursor, client):
-
     sql = "INSERT INTO CustomerInfo (customerID, name, age, gender, address) VALUES (%s, %s, %s, %s, %s)"
     #customerID is in range of [1, 297111]
     #tuple: (customerID, name, age, gender, address)
@@ -63,8 +56,7 @@ def insertData(cursor, client):
     try:
         cursor.executemany(sql, val)
         client.commit()
-        logger.info("Inserted rows:")
-        logger.info(cursor.rowcount)
+        logger.info("Inserted CustomerInfo rows: {}".format(cursor.rowcount))
     except Exception as e:
         logger.error(e)
 
@@ -75,12 +67,10 @@ def insertData(cursor, client):
     try:
         cursor.executemany(sql, val)
         client.commit()
-        logger.info("Inserted rows:")
-        logger.info(cursor.rowcount)
+        logger.info("Inserted CustomerRelationship rows: {}".format(cursor.rowcount))
     except Exception as e:
         logger.error(e)
 
-    return
 
 def main():
     f = open('./config.yml')
@@ -89,3 +79,4 @@ def main():
     cursor, client = connect_to_mysql(config)
     createTable(cursor)
     insertData(cursor, client)
+    logger.info("Finish setting up the database")
