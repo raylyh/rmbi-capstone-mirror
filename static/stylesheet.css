@@ -43,11 +43,22 @@ circle,
  	stroke: #666666;
  	stroke-width: 2px;
 }
-.hovered circle {
-  stroke: #DBDBDB;
-}
 .clicked circle {
   fill: #001C44;
+  -webkit-transition: .5s; /* 0.2 seconds transition on hover */
+  transition: fill .5s;
+}
+
+/*hover*/
+g.nodes g:hover circle {
+  stroke: black;
+  -webkit-transition: .5s; /* 0.2 seconds transition on hover */
+  transition: stroke .5s;
+}
+g.nodes g:hover text {
+  font-size: 20pt;
+  font-weight: bold;
+
 }
 
 line,
@@ -60,10 +71,6 @@ text {
   font-size: 14pt;
   font-family: "Courier New", Courier, monospace;
 }
-.hovered text {
-  font-size: 20pt;
-  font-weight: bold;
-}
 
 table th,
 table td {
@@ -71,6 +78,10 @@ table td {
   text-align: left;
   font-family: "Courier New", Courier, monospace;
   border: 1px solid black;
+}
+
+div.functionmenu:hover {
+  background-color: #F7FAFF;
 }
 
 .infocontainer {
