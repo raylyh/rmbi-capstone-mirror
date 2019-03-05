@@ -91,13 +91,13 @@ logger.critical('Message')
 ### MySQL Connection
 MySQL is one of the world's most popular open source database that is supported by an active community of open source developers and enthusiasts.
 
-####For MySQL connection:
+**For MySQL connection:**
 ```
 from src.mysql.mysql_in_python import connect_to_mysql
 cursor, client = connect_to_mysql(config)
 ```
 
-####For MySQL table creation and data insertion from scratch:
+**For MySQL table creation and data insertion from scratch:**
 ```
 from src.mysql.mysql_in_python import main
 main()
@@ -112,6 +112,7 @@ Can use Node-edge as **below**:
 ```
 from src.node_relationship.node_edge import get_node_edge
 nodes, links = get_node_edge(id, config)
+
 #id: customerID, config: database configuration retrieved from config.yml
 ```
 [back](#user-defined-function)

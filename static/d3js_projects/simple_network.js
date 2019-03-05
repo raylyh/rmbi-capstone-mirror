@@ -6,7 +6,7 @@ var color_weight = d3.scaleOrdinal(d3.schemeGreys[num_weight+1]).domain([...Arra
 var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
 
-var previous_hover_node, previous_click_node = null;
+var previous_click_node = null;
 
 var svg = d3.select("body").append("svg")
     .attr("class", "canvas")
@@ -217,11 +217,6 @@ function draw(data) {
   }
 
   function mouseover(d) {
-    if (!d3.select(previous_hover_node).empty()) {
-      d3.select(previous_hover_node).classed("hovered", false);
-    }
-    d3.select(this).classed("hovered", true); //turns a hovered node to black
-    previous_hover_node = this;
     d3.select(this).raise();  // put the hovered element as first element
 
     var current_id = d.id;
