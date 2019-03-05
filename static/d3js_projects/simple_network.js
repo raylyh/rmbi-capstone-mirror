@@ -41,6 +41,7 @@ function draw(data) {
   var link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree);
   var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id)));
   var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
+  var current_customer_info = data.nodes.filter(node => node.group == 0)[0];
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
   simulation.nodes(node_data).force("link").links(link_data);
   // pause the simulation to load for the FIRST time
@@ -48,7 +49,7 @@ function draw(data) {
     simulation.tick(300);
     first_run = false;
   }
-
+  console.log(current_customer_info);
   // DRAW EDGE
   link.selectAll("g")
     .data(link_data, d => d.source.id + '-' + d.target.id)
@@ -180,7 +181,8 @@ function draw(data) {
     // no clicked node
     if (d3.select(".clicked").node() == null) {
       for (var i = 0; i < choices.length; i++) {
-          data.push([choices[i],null]);
+
+          data.push([choices[i],current_customer_info[choices[i]]]);
       }
     } else {
       var selected_node = d3.select(".clicked").data()[0];
