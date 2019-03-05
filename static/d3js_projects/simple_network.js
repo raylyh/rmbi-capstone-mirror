@@ -109,7 +109,6 @@ function draw(data) {
   // hover, click, and double-click on a node
   d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mouseout", mouseout);
 
-
   function showWeight() {
     if (d3.select("#showWeight").property("checked")) {
       link.selectAll("g").append("text")
@@ -291,7 +290,6 @@ function btntog(d){
       }
     }
 
-
     for (var i = 0; i < link.length; i++) { //remove duplicates
       var listI = link[i];
       loopJ: for (var j = 0; j < link.length; j++) {
@@ -305,31 +303,87 @@ function btntog(d){
       }
     }
 
-    unique_node = new Set(link.flat());
+    var unique_node = new Set(link.flat());
+    unique_node = Array.from(unique_node);
 
-    for (var test in unique_node){
-      console.log(test);
+    var counts = {};
+
+    for (var i = 0; i < link.flat().length; i++) {
+      var num = link.flat()[i];
+      counts[num] = counts[num] ? counts[num] + 1 : 1;
     }
-    console.log(unique_node);
-    console.log("degree");
+
+    var count_list = [];
+
+    for (var row in unique_node){
+      count_list.push([unique_node[row], counts[unique_node[row]]]);
+    }
+
+    var new_color = color_convertor(count_list);
+    visualization(new_color);
 
   } else if (d == "#clo") {
+    var centrality = require('ngraph.centrality');
+
     console.log("Closeness");
   }else if (d == "#bet"){
+
+
     console.log("Betweenness");
 
   } else if (d == "#eig"){
     console.log("Eigenvector");
+
+
+  } else if (d == '#reset'){
+    var raw_link = d3.select("g.nodes").selectAll("g").data();
+    var origin_color = [];
+    for (i in raw_link){
+      origin_color.push([raw_link[i].id,color_degree(raw_link[i].group)]);
+    }
+    visualization(origin_color);
   }
 }
 
 
 
-function visualization(){
+function color_convertor(count_list){
+  // Input
+  // [[81230, 0.25],
+  // [81216, 1],
+  // [1, 0.25],
+  // [95808, 0.25],
+  // [95202, 0.25]]
 
+  var max = 0;
+  for (i in count_list){
+    if (max < count_list[i][1]){
+      max = count_list[i][1];
+    }
+  }
 
+  for (i in count_list){
+      count_list[i][1] = count_list[i][1] / max;
+  }
 
+  var new_color = [];
+  for (i in count_list){
+    new_color.push([count_list[i][0],d3.interpolateYlGnBu(count_list[i][1])]);
+  }
+  return new_color;
+}
 
+function visualization(new_color){
 
+  // Input
+  // [[81230, "rgb(254, 214, 118)"],
+  // [81216, "rgb(128, 0, 38)"],
+  // [1, "rgb(254, 214, 118)"],
+  // [95808, "rgb(254, 214, 118)"],
+  // [95202, "rgb(254, 214, 118)"]]
+
+  for (i in new_color){
+    d3.select("g[id='" + new_color[i][0] + "']").select("circle").style("fill", new_color[i][1]);
+  }
 
 }
