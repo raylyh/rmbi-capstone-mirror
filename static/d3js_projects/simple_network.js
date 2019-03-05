@@ -181,13 +181,13 @@ function draw(data) {
     // no clicked node
     if (d3.select(".clicked").node() == null) {
       for (var i = 0; i < choices.length; i++) {
-          data.push([choices[i],null]);
+          data.push([choices[i],current_customer_info[choices[i]]]);
       }
     } else {
       var selected_node = d3.select(".clicked").data()[0];
       for (var key in selected_node) {
         if (choices.includes(key)){
-          data.push([choices[i],current_customer_info[choices[i]]]);
+          data.push([key,selected_node[key]]);
         }
       }
     }
