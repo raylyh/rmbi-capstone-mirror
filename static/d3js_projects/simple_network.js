@@ -49,7 +49,7 @@ function draw(data) {
     simulation.tick(300);
     first_run = false;
   }
-  console.log(current_customer_info);
+  
   // DRAW EDGE
   link.selectAll("g")
     .data(link_data, d => d.source.id + '-' + d.target.id)
