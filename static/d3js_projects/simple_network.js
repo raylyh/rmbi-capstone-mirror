@@ -6,7 +6,7 @@ var color_weight = d3.scaleOrdinal(d3.schemeGreys[num_weight+1]).domain([...Arra
 var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
 
-var previous_hover_node, previous_click_node = null;
+var previous_click_node = null;
 
 var svg = d3.select("body").append("svg")
     .attr("class", "canvas")
@@ -49,7 +49,7 @@ function draw(data) {
     simulation.tick(300);
     first_run = false;
   }
-  
+
   // DRAW EDGE
   link.selectAll("g")
     .data(link_data, d => d.source.id + '-' + d.target.id)
@@ -108,7 +108,6 @@ function draw(data) {
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   // hover, click, and double-click on a node
   d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mouseout", mouseout);
-
 
   function showWeight() {
     if (d3.select("#showWeight").property("checked")) {
@@ -181,7 +180,6 @@ function draw(data) {
     // no clicked node
     if (d3.select(".clicked").node() == null) {
       for (var i = 0; i < choices.length; i++) {
-
           data.push([choices[i],current_customer_info[choices[i]]]);
       }
     } else {
@@ -218,11 +216,6 @@ function draw(data) {
   }
 
   function mouseover(d) {
-    if (!d3.select(previous_hover_node).empty()) {
-      d3.select(previous_hover_node).classed("hovered", false);
-    }
-    d3.select(this).classed("hovered", true); //turns a hovered node to black
-    previous_hover_node = this;
     d3.select(this).raise();  // put the hovered element as first element
 
     var current_id = d.id;
@@ -277,4 +270,115 @@ function dblclicked(d) {
 
 function zoomed() {
   d3.select(this).select("g").attr("transform", d3.event.transform);
+}
+
+
+function btntog(d){
+  if (d == "#deg"){
+    var raw_link = d3.select("g.links").selectAll("g").data();
+    var link = [];
+    for (var i in raw_link){
+      if (raw_link[i].source.id > raw_link[i].target.id){
+        link.push([raw_link[i].source.id, raw_link[i].target.id]);
+      } else {
+        link.push([raw_link[i].target.id,raw_link[i].source.id]);
+      }
+    }
+
+    for (var i = 0; i < link.length; i++) { //remove duplicates
+      var listI = link[i];
+      loopJ: for (var j = 0; j < link.length; j++) {
+        var listJ = link[j]; //listJ and listI point at different arrays within the link array
+        if (listI === listJ) continue; //Ignore itself
+        for (var k = listJ.length; k >= 0; k--) { //checks whether the values are different, if they are continue with the loop
+          if (listJ[k] !== listI[k]) continue loopJ;
+        }
+        // At this point, their values are equal so we remove from the link array
+        link.splice(j, 1);
+      }
+    }
+
+    var unique_node = new Set(link.flat());
+    unique_node = Array.from(unique_node);
+
+    var counts = {};
+
+    for (var i = 0; i < link.flat().length; i++) {
+      var num = link.flat()[i];
+      counts[num] = counts[num] ? counts[num] + 1 : 1;
+    }
+
+    var count_list = [];
+
+    for (var row in unique_node){
+      count_list.push([unique_node[row], counts[unique_node[row]]]);
+    }
+
+    var new_color = color_convertor(count_list);
+    visualization(new_color);
+
+  } else if (d == "#clo") {
+    var centrality = require('ngraph.centrality');
+
+    console.log("Closeness");
+  }else if (d == "#bet"){
+
+
+    console.log("Betweenness");
+
+  } else if (d == "#eig"){
+    console.log("Eigenvector");
+
+
+  } else if (d == '#reset'){
+    var raw_link = d3.select("g.nodes").selectAll("g").data();
+    var origin_color = [];
+    for (i in raw_link){
+      origin_color.push([raw_link[i].id,color_degree(raw_link[i].group)]);
+    }
+    visualization(origin_color);
+  }
+}
+
+
+
+function color_convertor(count_list){
+  // Input
+  // [[81230, 0.25],
+  // [81216, 1],
+  // [1, 0.25],
+  // [95808, 0.25],
+  // [95202, 0.25]]
+
+  var max = 0;
+  for (i in count_list){
+    if (max < count_list[i][1]){
+      max = count_list[i][1];
+    }
+  }
+
+  for (i in count_list){
+      count_list[i][1] = count_list[i][1] / max;
+  }
+
+  var new_color = [];
+  for (i in count_list){
+    new_color.push([count_list[i][0],d3.interpolateYlGnBu(count_list[i][1])]);
+  }
+  return new_color;
+}
+
+function visualization(new_color){
+
+  // Input
+  // [[81230, "rgb(254, 214, 118)"],
+  // [81216, "rgb(128, 0, 38)"],
+  // [1, "rgb(254, 214, 118)"],
+  // [95808, "rgb(254, 214, 118)"],
+  // [95202, "rgb(254, 214, 118)"]]
+
+  for (i in new_color){
+    d3.select("g[id='" + new_color[i][0] + "']").select("circle").style("fill", new_color[i][1]);
+  }
+
 }

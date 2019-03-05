@@ -69,6 +69,26 @@
 			<div id="weightInfo" class="infocontainer"></div>
 			<div id="customerInfo" class="infocontainer"></div>
 		</div>
+		<div class="sosc">
+			<h2>Centrality Measurement</h2>
+			<div id="colorbar" style="width:600px">
+			                <div class="text-right" style="float:right">Most Central</div>
+			                <div>Least Central</div>
+											<img src = "{{ url_for('static', filename='YlOrRd.png')}}" width="200%" height="40" alt="YlOrRd" style="max-width:200%;">
+			</div>
+			<div class="row">
+              <div class="col-xs-8 text-center">
+                  <p style="margin-bottom:.1em">Centrality type:</p>
+                  <div class="btn-group" role="group">
+                  <button id="deg" onclick="btntog('#deg')" type="button" class="btn btn-default active">Degree</button>
+                  <button id="clo" onclick="btntog('#clo')" type="button" class="btn btn-default">Closeness</button>
+                  <button id="bet" onclick="btntog('#bet')" type="button" class="btn btn-default">Betweenness</button>
+                  <button id="eig" onclick="btntog('#eig')" type="button" class="btn btn-default">Eigenvector</button>
+									<button id="reset" onclick="btntog('#reset')" type="button" class="btn btn-default">Reset</button>
+                    </div>
+             </div>
+      </div>
+		</div>
 	</body>
 	<!--location to my script-->
 	<script type="text/javascript" src="{{ url_for('static', filename='d3js_projects/simple_network.js')}}"></script>
