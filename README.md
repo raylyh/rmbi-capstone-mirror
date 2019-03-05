@@ -123,8 +123,7 @@ nodes, links = get_node_edge(id, config)
 1. [Python-Flask](#python-flask)
 2. [D3.js](#d3.js)
 3. [HTML](#html)
-4. [JavaScript](#javascript)
-5. [CSS](#css)
+4. [CSS](#css)
 
 [back](#contents)
 
@@ -152,13 +151,6 @@ In this project, the latest release is used in the HTML.
 
 -----
 ### HTML
-
-
-
-[back](#network-visualization-website)
-
-------
-### JavaScript
 
 
 
