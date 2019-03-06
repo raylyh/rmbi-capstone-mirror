@@ -5,7 +5,6 @@ var color_degree = d3.scaleOrdinal(d3.schemeSpectral[num_degree+1]).domain([...A
 var color_weight = d3.scaleOrdinal(d3.schemeGreys[num_weight+1]).domain([...Array(num_weight+1).keys()]);
 var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
-
 var previous_click_node = null;
 
 var svg = d3.select("body").append("svg")
@@ -318,7 +317,11 @@ function btntog(d){
     visualization(new_color);
 
   } else if (d == "#clo") {
-    var centrality = require('ngraph.centrality');
+    var G = new jsnx.Graph();
+
+    G.addEdgesFrom();
+    console.log(G.nodes());
+    console.log(G.edges());
 
     console.log("Closeness");
   }else if (d == "#bet"){
