@@ -317,20 +317,74 @@ function btntog(d){
     visualization(new_color);
 
   } else if (d == "#clo") {
+
+
     var G = new jsnx.Graph();
+    var raw_link = d3.select("g.links").selectAll("g").data();
+    var link = [];
+    for (var i in raw_link){
+      if (raw_link[i].source.id > raw_link[i].target.id){
+        link.push([raw_link[i].source.id, raw_link[i].target.id]);
+      } else {
+        link.push([raw_link[i].target.id,raw_link[i].source.id]);
+      }
+    }
+    G.addEdgesFrom(link);
+    // TODO
+    var temp_value = jsnx.closenessCentrality(G)._numberValues;
+    var count_list = [];
+    for (i in temp_value){
+      count_list.push([i,temp_value[i]]);
+    }
 
-    G.addEdgesFrom();
-    console.log(G.nodes());
-    console.log(G.edges());
+    var new_color = color_convertor(count_list);
+    visualization(new_color);
 
-    console.log("Closeness");
   }else if (d == "#bet"){
 
+    var G = new jsnx.Graph();
+    var raw_link = d3.select("g.links").selectAll("g").data();
+    var link = [];
+    for (var i in raw_link){
+      if (raw_link[i].source.id > raw_link[i].target.id){
+        link.push([raw_link[i].source.id, raw_link[i].target.id]);
+      } else {
+        link.push([raw_link[i].target.id,raw_link[i].source.id]);
+      }
+    }
+    G.addEdgesFrom(link);
+    // TODO
+    var temp_value = jsnx.betweennessCentrality(G)._numberValues;
+    var count_list = [];
+    for (i in temp_value){
+      count_list.push([i,temp_value[i]]);
+    }
 
-    console.log("Betweenness");
-
+    var new_color = color_convertor(count_list);
+    visualization(new_color);
   } else if (d == "#eig"){
-    console.log("Eigenvector");
+
+
+    var G = new jsnx.Graph();
+    var raw_link = d3.select("g.links").selectAll("g").data();
+    var link = [];
+    for (var i in raw_link){
+      if (raw_link[i].source.id > raw_link[i].target.id){
+        link.push([raw_link[i].source.id, raw_link[i].target.id]);
+      } else {
+        link.push([raw_link[i].target.id,raw_link[i].source.id]);
+      }
+    }
+    G.addEdgesFrom(link);
+    // TODO
+    var temp_value = jsnx.eigenvectorCentrality(G)._numberValues;
+    var count_list = [];
+    for (i in temp_value){
+      count_list.push([i,temp_value[i]]);
+    }
+
+    var new_color = color_convertor(count_list);
+    visualization(new_color);
 
 
   } else if (d == '#reset'){
@@ -347,11 +401,11 @@ function btntog(d){
 
 function color_convertor(count_list){
   // Input
-  // [[81230, 0.25],
-  // [81216, 1],
-  // [1, 0.25],
-  // [95808, 0.25],
-  // [95202, 0.25]]
+  // [[81230, 1],
+  // [81216, 4],
+  // [1, 1],
+  // [95808, 1,
+  // [95202, 1]]
 
   var max = 0;
   for (i in count_list){
