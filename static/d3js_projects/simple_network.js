@@ -36,17 +36,12 @@ function draw(data) {
   // INITIALIZE SIMULATION
   simulation.alpha(1).stop();
 
-	// HARD-CODE: node and links
   simulation.nodes(data.nodes).force("link").links(data.links);
   // OVERWRITE NEW DATA with FILTERED NODE AND EDGE
 
-	// HARD-CODE: weight and group
   var link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree);
-	// HARD-CODE: source.id and target.id
   var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id)));
-	// HARD-CODE: id and group
   var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
-	// HARD-CODE: group
   var current_customer_info = data.nodes.filter(node => node.group == 0)[0];
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
   simulation.nodes(node_data).force("link").links(link_data);
@@ -58,10 +53,8 @@ function draw(data) {
 
   // DRAW EDGE
   link.selectAll("g")
-		// HARD-CODE: source.id and target.id
     .data(link_data, d => d.source.id + '-' + d.target.id)
     .join(
-			// HARD-CODE: source.id and target.id
       enter => enter.append("g").attr("id", d => d.source.id + '-' + d.target.id)
       .append("line")
         .attr("x1", d => d.source.x)
@@ -80,10 +73,8 @@ function draw(data) {
 
   // DRAW NODE
   node.selectAll("g")
-		// HARD-CODE: id
     .data(node_data, d => d.id)
     .join(
-			// HARD-CODE: id
       enter => enter.append("g").attr("id", d => d.id)
       .call(enter => {
         enter.append("circle") //create circle in a node group
@@ -91,10 +82,8 @@ function draw(data) {
           .attr("cy", d => d.y)
         .call(enter => enter.transition(t)  //animation
           .attr("r", radius)
-					// HARD-CODE: group
           .attr("fill", d => color_degree(d.group)));
         enter.append("text") //create label in a node group
-					// HARD-CODE: id
           .text(d => d.id)
           .attr("x", d => d.x + radius)
           .attr("y", d => d.y + 5)
@@ -124,9 +113,7 @@ function draw(data) {
   function showWeight() {
     if (d3.select("#showWeight").property("checked")) {
       link.selectAll("g").append("text")
-				// HARD-CODE: weight
         .text(d => d.weight)
-				// HARD-CODE: source and target
         .attr("transform", d => "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")")
         .call(enter => enter.transition(t).attr('opacity', 1));
     } else {
@@ -150,7 +137,6 @@ function draw(data) {
     trow.append('td').text("Count");
     for (var i = 0; i <= max_degree; i++) {
       thead.append('th').text(i);
-			// HARD-CODE: group
       trow.append('td').text(node.selectAll("g").data().filter(d => d.group == i).length);
     }
 
@@ -164,7 +150,6 @@ function draw(data) {
     trow.append('td').text("Count");
     for (var i = 0; i <= 5 - min_strength; i++) {
       thead.append('th').text((5-i));
-			// HARD-CODE: weight
       trow.append('td').text(link.selectAll("g").data().filter(d => d.weight == 5-i).length);
     }
     // UPDATE DEGREE AND STRENGTH OUTPUT IN HTML
@@ -235,12 +220,10 @@ function draw(data) {
     d3.select(this).raise();  // put the hovered element as first element
 
     var current_id = d.id;
-		// HARD-CODE: source.id and target.id
     var opacity_link_data = link.selectAll("g").data().filter(link => link.source.id == current_id || link.target.id == current_id);
 
     var opacity_link = [];
     for (var i in opacity_link_data){
-			// HARD-CODE: source.id and target.id
       opacity_link.push([opacity_link_data[i].source.id, opacity_link_data[i].target.id]);
     }
 
@@ -281,7 +264,6 @@ function draw(data) {
 // FUNCTIONS
 function dblclicked(d) {
   //double-clicked circle then update the submit form
-	// HARD-CODE: id
   d3.select("#searchinput").property("value", d.id);
   document.getElementById("searchform").submit();
 }
@@ -297,7 +279,6 @@ function btntog(d){
 	var raw_link = d3.select("g.links").selectAll("g").data();
 	var link = [];
 	for (var i in raw_link){
-		// HARD-CODE: source.id and target.id
 		if (raw_link[i].source.id > raw_link[i].target.id){
 			link.push([raw_link[i].source.id, raw_link[i].target.id]);
 		} else {
@@ -310,7 +291,6 @@ function btntog(d){
     var raw_link = d3.select("g.links").selectAll("g").data();
     var link = [];
     for (var i in raw_link){
-			// HARD-CODE: source.id and target.id
       if (raw_link[i].source.id > raw_link[i].target.id){
         link.push([raw_link[i].source.id, raw_link[i].target.id]);
       } else {
@@ -388,7 +368,6 @@ function btntog(d){
     var raw_link = d3.select("g.nodes").selectAll("g").data();
     var origin_color = [];
     for (i in raw_link){
-			// HARD-CODE: id and group
       origin_color.push([raw_link[i].id,color_degree(raw_link[i].group)]);
     }
     visualization(origin_color);
