@@ -122,15 +122,14 @@ nodes, links = get_node_edge(id, config)
 ## Network visualization Website
 1. [Python-Flask](#python-flask)
 2. [D3.js](#d3.js)
-3. [HTML](#html)
-4. [CSS](#css)
 
 [back](#contents)
 
 -----
 ### Python-Flask
+Flask is a Python web development framework based on the Werkzeug, Jinja, MarkupSafe and itsdangerous pallets libraries. It was originally created in 2010 and has since powered some of the largest websites on the internet.
 
-
+In this project, the flask is used to set up our website and pass data to index.html(in app.py).
 
 [back](#network-visualization-website)
 
@@ -148,19 +147,3 @@ In this project, the latest release is used in the HTML.
 >
 
 [back](#network-visualization-website)
-
------
-### HTML
-
-
-
-[back](#network-visualization-website)
-
------
-### CSS
-
-
-
-[back](#network-visualization-website)
-
------
