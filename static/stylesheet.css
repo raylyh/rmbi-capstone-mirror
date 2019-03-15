@@ -6,7 +6,7 @@ body {
 
 
 /* general texts */
-p, span, input[type="text"], h1, h2, label, form {
+p, span, input[type="text"], h1, h2, label, form, .colorbar div {
   font-family: "Lato", sans-serif;
   font-weight: lighter;
   font-size: 32px;
@@ -24,7 +24,7 @@ h2 {
   font-weight: bolder;
   margin-bottom: 0.5em;
 }
-label, .checkboxes * {
+label, .checkboxes *, .colorbar div {
   font-size: 20px;
 }
 input[type="checkbox"] {
@@ -87,6 +87,19 @@ div.functionmenu:hover {
 .infocontainer {
   margin-right: 100px;
   display: inline-block;
+}
+
+/*Centrality*/
+.colorbar {
+  width: 100%;
+  max-width: 1000px;
+}
+.text-right {
+  float: right;
+  text-align: right;
+}
+.text-left {
+  float: left;
 }
 
 /* SLIDER */
