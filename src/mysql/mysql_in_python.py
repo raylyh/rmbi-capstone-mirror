@@ -28,7 +28,7 @@ def connect_to_mysql(config):
 def createTable(cursor):
     try:
         cursor.execute("""CREATE TABLE CustomerInfo (
-            customerID BIGINT, name VARCHAR(100), age INT, gender VARCHAR(20), Address VARCHAR(200),
+            CustomerID BIGINT, Name VARCHAR(100), Age INT, Gender VARCHAR(20), Address VARCHAR(200), SmokingStatus VARCHAR(100), Education VARCHAR(100),Health VARCHAR(100)
             primary key (customerID))""")
         logger.info("Success in creating CustomerInfo Table")
     except Exception as e:
@@ -44,14 +44,20 @@ def createTable(cursor):
 
 
 def insertData(cursor, client):
-    sql = "INSERT INTO CustomerInfo (customerID, name, age, gender, address) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO CustomerInfo (CustomerID, Name, Age, Gender, Address,SmokingStatus,Education,Health) VALUES (%s, %s, %s, %s, %s,%s, %s, %s)"
     #customerID is in range of [1, 297111]
     #tuple: (customerID, name, age, gender, address)
+
     val = [(i,
         names.get_full_name(),
         random.randint(18,80),
         random.choice(['M','F']),
-        "address"+str(i)) for i in range(1, 297112)]
+        random.choice(['Yuen Long','Sha Tin','Tai Po','Sham Shui Po','Sai Kung','Southern',
+        'Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong',
+        'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands']),
+        random.choice(['Smoker','Non Smoker']),
+        random.choice(['Primary','Secondary','Tertiary']),
+        random.choice(['Normal','Hypertension','Cancer','Diabetes'])) for i in range(1, 297112)]
     logger.info("Finish generating random customer info")
     try:
         cursor.executemany(sql, val)
