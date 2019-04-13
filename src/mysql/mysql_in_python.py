@@ -77,7 +77,6 @@ def insertData(cursor, client):
     except Exception as e:
         logger.error(e)
 
-
 def main():
     f = open('./config.yml')
     config = yaml.load(f)
