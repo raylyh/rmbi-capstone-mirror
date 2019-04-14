@@ -15,10 +15,11 @@ config = yaml.load(f)
 @app.route("/", methods=["GET", "POST"])
 def initialize():
     customerID = None
-    if request.method == "POST":
-        customerID = request.form.get("customerID", None)
+    if request.method == "GET":
+        customerID = request.values.get("customerID", None) # get the customer id from website
+        logger.info(customerID)
     if customerID:
-        id = int(customerID)
+        id = int(customerID) # change it to int type
     else:
         id = random.randint(1, 297111)  #randomly choose between 1 to 297111 to show a graph
 
@@ -26,6 +27,8 @@ def initialize():
     nodes, links = get_node_edge(id, config)
 
     json_data = dict(nodes=nodes, links=links)
+
+    # send the data to index.html
     return render_template("index.html", customerID=customerID, data=json_data)
 
 if __name__ == '__main__':

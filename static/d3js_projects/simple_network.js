@@ -7,26 +7,30 @@ var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
 var previous_click_node = null;
 
+var tooltip = d3.select("body").append("div")
+  .attr("class", "tooltiptext")
+  .style("opacity", 0);
+
 var svg = d3.select("body").append("svg")
-    .attr("class", "canvas")
-    .attr("width", "100%")
-    .attr("height", "60vh")
-    .append("g");
+  .attr("class", "canvas")
+  .attr("width", "100%")
+  .attr("height", "80vh")
+  .append("g");
 var link = svg.append("g")  // 'link' needs to be declared before 'node'
   .attr("class", "links");  // so that link is below node in graph
 var node = svg.append("g")
   .attr("class", "nodes");
 
 
-var t = svg.transition().duration(750);
+var t = svg.transition().duration(500);
 
 var bbox = d3.select("svg.canvas").node().getBoundingClientRect();
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(link => link.id).distance(90))
-    .force("charge", d3.forceManyBody().strength(-125*5))
-    .force("center", d3.forceCenter(bbox.width/2, bbox.height/2))
-    .force("collision", d3.forceCollide(radius*2));
+  .force("link", d3.forceLink().id(link => link.id).distance(90))
+  .force("charge", d3.forceManyBody().strength(-125*5))
+  .force("center", d3.forceCenter(bbox.width/2, bbox.height/2))
+  .force("collision", d3.forceCollide(radius*2));
 
 var first_run = true;
 // *****
@@ -39,12 +43,13 @@ function draw(data) {
   simulation.nodes(data.nodes).force("link").links(data.links);
   // OVERWRITE NEW DATA with FILTERED NODE AND EDGE
 
-  var link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree);
-  var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id)));
-  var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree);
-  var current_customer_info = data.nodes.filter(node => node.group == 0)[0];
+  var link_data = data.links.filter(link => link.weight >= min_strength && link.group <= max_degree); // get the link data which fulfill the requirements in Degree Slider and Weight Slider
+  var valid_id_set = d3.set(link_data.map(link => link.source.id).concat(link_data.map(link => link.target.id))); // get the unique customer id in link data
+  var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree); // get the link data which fulfill the requirements in Degree Slider and unique customers
+  var current_customer_info = data.nodes.filter(node => node.group == 0)[0]; // get the information of current selected customer -- for initialize the table information
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
   simulation.nodes(node_data).force("link").links(link_data);
+
   // pause the simulation to load for the FIRST time
   if (first_run) {
     simulation.tick(300);
@@ -55,7 +60,7 @@ function draw(data) {
   link.selectAll("g")
     .data(link_data, d => d.source.id + '-' + d.target.id)
     .join(
-      enter => enter.append("g").attr("id", d => d.source.id + '-' + d.target.id)
+      enter => enter.append("g").attr("id", d => d.source.id + '-' + d.target.id) // the id of link data is customerid1-customerid2
       .append("line")
         .attr("x1", d => d.source.x)
         .attr("y1", d => d.source.y)
@@ -100,11 +105,11 @@ function draw(data) {
     );
 
   //FUNCTIONALITY
-  showInfo(); //intialize first
+  showInfo(); //intialize the website first
 
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
-  d3.selectAll("#degreeslider, #strengthslider").on("change", sliderChange); // testing degree slider to change the degree displayed
-  d3.selectAll(".TableFilter").on("change", changeCheckboxInfo);
+  d3.selectAll("#degreeslider, #strengthslider").on("change", sliderChange); // changes in slider would change the network displayed
+  d3.selectAll(".TableFilter").on("change", changeCheckboxInfo); // changes in table filter will affect the table information
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   // hover, click, and double-click on a node
@@ -115,19 +120,20 @@ function draw(data) {
       link.selectAll("g").append("text")
         .text(d => d.weight)
         .attr("transform", d => "translate(" + (d.source.x+d.target.x)/2 + "," + (d.source.y+d.target.y)/2 + ")")
-        .call(enter => enter.transition(t).attr('opacity', 1));
+        .call(enter => enter.transition(t).attr('opacity', 1)); // opacity = 1 is visible / normal case
     } else {
       d3.selectAll("g.links").selectAll("text")
-        .call(exit => exit.transition(t).attr('opacity', 0).remove());
+        .call(exit => exit.transition(t).attr('opacity', 0).remove()); // opacity = 0 is invisible
     }
   }
   function sliderChange() {
+    // get the two new slider values and call draw function again.
     max_degree = document.getElementById("degreeslider").value;
     min_strength = document.getElementById("strengthslider").value;
     draw(data);
   }
 
-  function showInfo() {
+  function showInfo() { // initialize
     d3.select("#degreeInfo").selectAll("table").remove();
     // DEGREE INFO TABLE
     table = d3.select("#degreeInfo").append("table");
@@ -162,6 +168,7 @@ function draw(data) {
   }
 
   function showCheckBox(){
+    // create a checkout box for table filter
     var checkboxes = d3.select("#nodecheckboxes").selectAll("input")
     .data(valid_key)
     .enter()
@@ -176,14 +183,17 @@ function draw(data) {
   }
 
   function changeCheckboxInfo() {
+    // update table information when there is any changes in checkbox
     var choices = d3.selectAll(".TableFilter").nodes().filter(x => x.checked).map(x => x.id);
     var data = [];
     // no clicked node
     if (d3.select(".clicked").node() == null) {
       for (var i = 0; i < choices.length; i++) {
+        // push the current selected customer information as intializing
           data.push([choices[i],current_customer_info[choices[i]]]);
       }
     } else {
+      // based on the seleted box, update the table information
       var selected_node = d3.select(".clicked").data()[0];
       for (var key in selected_node) {
         if (choices.includes(key)){
@@ -192,7 +202,9 @@ function draw(data) {
       }
     }
 
+    // remove the past table content
     d3.select("#customerInfo").selectAll("table").remove();
+    // append the new table content
     table = d3.select("#customerInfo").append("table")
     thead = table.append('tr')
     trow = table.append('tr')
@@ -201,6 +213,15 @@ function draw(data) {
       thead.append('th').text(data[i][0]);
       trow.append('td').text(data[i][1]);
     }
+  }
+
+  function showTooltipInfo(d) {
+    var choices = d3.selectAll(".TableFilter").nodes().filter(x => x.checked).map(x => x.id);
+    var tooltip_string = "";
+    for (var i in choices) {
+      tooltip_string += choices[i] + ": " + d[choices[i]] + "<br/>";
+    }
+    tooltip.html(tooltip_string);
   }
 
   function mousedown(d) {
@@ -213,14 +234,18 @@ function draw(data) {
       d3.select(this).classed("clicked", true);
       previous_click_node = this;
     }
+    // update the table information
     changeCheckboxInfo();
   }
 
   function mouseover(d) {
     d3.select(this).raise();  // put the hovered element as first element
-
+    // show tooltip
+    showTooltipInfo(d);
+    tooltip.style("opacity", 1);
+    // highlight nearest neighbour
     var current_id = d.id;
-    var opacity_link_data = link.selectAll("g").data().filter(link => link.source.id == current_id || link.target.id == current_id);
+    var opacity_link_data = link.selectAll("g").data().filter(link => link.source.id == current_id || link.target.id == current_id); // get the link data which contains of current id
 
     var opacity_link = [];
     for (var i in opacity_link_data){
@@ -228,6 +253,7 @@ function draw(data) {
     }
 
     var adjlist = [];
+    // to get the id of link data
     for (var row = 0; row < opacity_link.length; row ++){
       if (opacity_link[row][0] <= opacity_link[row][1]){
         adjlist.push([opacity_link[row][1] + '-' + opacity_link[row][0]]);
@@ -237,16 +263,18 @@ function draw(data) {
 
     }
 
+    // lower the opacity of whole graph to 0.1
     link.selectAll("g").select("line").style("stroke-width", 0.1);
     link.selectAll("g").select("text").style("opacity", 0.1);
     node.selectAll("g").select("circle").style("opacity", 0.1);
     node.selectAll("g").select("text").style("opacity", 0.1);
 
+    // for current links, change their opacity values to original value
     for (var num in adjlist){
       d3.select("g[id='" + adjlist[num] + "']").select("line").style("stroke-width", 1);
       d3.select("g[id='" + adjlist[num] + "']").select("text").style("opacity", 1);
     }
-
+    // for current nodes and related first degree node, change their opacity values to original value
     for (var num in opacity_link.flat()){
       d3.select("g[id='" + opacity_link.flat()[num] + "']").select("circle").style("opacity", 1);
       d3.select("g[id='" + opacity_link.flat()[num] + "']").select("text").style("opacity", 1);
@@ -254,9 +282,11 @@ function draw(data) {
   }
 
   function mouseout(d){
+    // change all opacity values to original value
     node.selectAll("circle").style("opacity", 1);
     link.selectAll("line").style("stroke-width", 1);
     d3.selectAll('text').style("opacity", 1);
+    tooltip.style("opacity", 0);
   }
 
 }
@@ -274,7 +304,10 @@ function zoomed() {
 
 
 function btntog(d){
+  // function for social network analysis
+  // we use a javascript package jsnetworkx
 
+  // create a jsnx graph by our data
 	var G = new jsnx.Graph();
 	var raw_link = d3.select("g.links").selectAll("g").data();
 	var link = [];
@@ -285,8 +318,10 @@ function btntog(d){
 			link.push([raw_link[i].target.id,raw_link[i].source.id]);
 		}
 	}
+  // add all our link data into the graph, the graph will automatically create the corresponding nodes
 	G.addEdgesFrom(link);
 
+  // for degree centrality
   if (d == "#deg"){
     var raw_link = d3.select("g.links").selectAll("g").data();
     var link = [];
@@ -320,7 +355,7 @@ function btntog(d){
       var num = link.flat()[i];
       counts[num] = counts[num] ? counts[num] + 1 : 1;
     }
-
+    // counting the number of first degree nodes for all nodes in the network
     var count_list = [];
 
     for (var row in unique_node){
@@ -330,6 +365,8 @@ function btntog(d){
     var new_color = color_convertor(count_list);
     visualization(new_color);
 
+  // for closeness centrality
+  // the function in that package is not define
   } else if (d == "#clo") {
 		alert("Function Not Define");
 		// TODO
@@ -342,9 +379,12 @@ function btntog(d){
     // var new_color = color_convertor(count_list);
     // visualization(new_color);
 
+  // for betweenness centrality
   }else if (d == "#bet"){
-
+    // the package helps calculate the value
     var temp_value = jsnx.betweennessCentrality(G)._numberValues;
+
+    // change to the required nested list for function
     var count_list = [];
     for (i in temp_value){
       count_list.push([i,temp_value[i]]);
@@ -352,9 +392,14 @@ function btntog(d){
 
     var new_color = color_convertor(count_list);
     visualization(new_color);
-  } else if (d == "#eig"){
 
+  // for eigenvector centrality
+  } else if (d == "#eig"){
+    // the package helps calculate the value
+    // max iter = 100000, ensure it can coverage
     var temp_value = jsnx.eigenvectorCentrality(G,{maxIter: 100000})._numberValues;
+
+    // change to the required nested list for function
     var count_list = [];
     for (i in temp_value){
       count_list.push([i,temp_value[i]]);
@@ -366,6 +411,8 @@ function btntog(d){
 
   } else if (d == '#reset'){
     var raw_link = d3.select("g.nodes").selectAll("g").data();
+
+    // get back the original rgb value of the nodes
     var origin_color = [];
     for (i in raw_link){
       origin_color.push([raw_link[i].id,color_degree(raw_link[i].group)]);
@@ -384,6 +431,8 @@ function color_convertor(count_list){
   // [95808, 1,
   // [95202, 1]]
 
+
+  // normalization for the nested list
   var max = 0;
   for (i in count_list){
     if (max < count_list[i][1]){
@@ -395,6 +444,7 @@ function color_convertor(count_list){
       count_list[i][1] = count_list[i][1] / max;
   }
 
+  // change it to rgb value
   var new_color = [];
   for (i in count_list){
     new_color.push([count_list[i][0],d3.interpolateYlGnBu(count_list[i][1])]);
@@ -411,6 +461,7 @@ function visualization(new_color){
   // [95808, "rgb(254, 214, 118)"],
   // [95202, "rgb(254, 214, 118)"]]
 
+  // by identifying the node id (customer id), change the circle into the required rgb valye
   for (i in new_color){
     d3.select("g[id='" + new_color[i][0] + "']").select("circle").style("fill", new_color[i][1]);
   }

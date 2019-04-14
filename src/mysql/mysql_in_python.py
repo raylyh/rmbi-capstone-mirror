@@ -7,7 +7,17 @@ __name__ = "MySQL-In-Python"
 logger = set_up_logger(__name__)
 
 def connect_to_mysql(config):
+    """Function to connect mysql database
+
+    Args:
+        config (dict): the information of mysql
+
+    Returns:
+        client and cursor for mysql
+
+    """
     try:
+        # connect Mysql database using the config file
         client = pymysql.connect(
           user=config['USER'],
           password=config['PASSWORD'],
@@ -19,14 +29,26 @@ def connect_to_mysql(config):
         cursor = client.cursor()
         logger.info('Successful connection to MySQL Database')
     except Exception as e:
+        # to locate the error in connecting Mysql database
         logger.error("Failed to connect to MySQL Database - {}".format(e))
         raise ValueError("Please check your config file first")
 
+    # return cursor and client
     return cursor, client
 
 
 def createTable(cursor):
+    """Function to create temp table in MySQL
+
+    Schema in mysql database is not provided. We create some example tables as our customer relationship management database.
+
+    Args:
+        cursor: mysql cursor
+
+    """
+
     try:
+        # cursor execute a sql comment
         cursor.execute("""CREATE TABLE CustomerInfo (
             CustomerID BIGINT, Name VARCHAR(100), Age INT, Gender VARCHAR(20), Address VARCHAR(200), SmokingStatus VARCHAR(100), Education VARCHAR(100),Health VARCHAR(100)
             primary key (customerID))""")
@@ -34,6 +56,7 @@ def createTable(cursor):
     except Exception as e:
         logger.error("CustomerInfo Table already exist - {}".format(e))
     try:
+        # cursor execute a sql comment
         cursor.execute("""CREATE TABLE CustomerRelationship (
             customerID1 BIGINT, customerID2 BIGINT, weight INT, type INT,
             foreign key (customerID1) references CustomerInfo(customerID),
@@ -61,6 +84,7 @@ def insertData(cursor, client):
     logger.info("Finish generating random customer info")
     try:
         cursor.executemany(sql, val)
+        # commit the changers to database, otherwise the inserted data will not really save in mysql database
         client.commit()
         logger.info("Inserted CustomerInfo rows: {}".format(cursor.rowcount))
     except Exception as e:
@@ -72,6 +96,7 @@ def insertData(cursor, client):
     val = list(table.itertuples(index=False, name=None))
     try:
         cursor.executemany(sql, val)
+        # commit the changers to database, otherwise the inserted data will not really save in mysql database
         client.commit()
         logger.info("Inserted CustomerRelationship rows: {}".format(cursor.rowcount))
     except Exception as e:

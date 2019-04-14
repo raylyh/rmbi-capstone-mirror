@@ -2,6 +2,17 @@ import logging
 import os
 
 def set_up_logger(__name__ = None):
+    """Function to create logger
+
+    Logger is use to indicate errors in function. It is very useful in development.
+
+    Args:
+        name (str): the name of program that you are running
+
+    Returns:
+        a logger with two formatted handler -- one is saving log file in local, another one is showing output in comment line
+
+    """
     # creates logger
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)

@@ -23,7 +23,7 @@
 					Random network displayed
 				{% endif %}
 			</p>
-			<form id="searchform" action ="/" method="POST">
+			<form id="searchform" action ="/" method="GET">
 				Please enter Customer ID: <input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
 			</form>
 		</div>
@@ -72,10 +72,10 @@
 		</div>
 		<div class="sosc">
 			<h2>Centrality Measurement</h2>
-			<div id="colorbar" style="width:600px">
-			                <div class="text-right" style="float:right">Most Central</div>
-			                <div>Least Central</div>
-											<img src = "{{ url_for('static', filename='YlOrRd.png')}}" width="200%" height="40" alt="YlOrRd" style="max-width:200%;">
+			<div class="colorbar">
+				<div class="text-left">Least Central</div>
+        <div class="text-right">Most Central</div>
+				<img src="{{ url_for('static', filename='YlOrRd.png')}}" width="100%" height="40" alt="YlOrRd">
 			</div>
 			<div class="row">
               <div class="col-xs-8 text-center">

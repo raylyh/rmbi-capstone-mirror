@@ -6,7 +6,7 @@ body {
 
 
 /* general texts */
-p, span, input[type="text"], h1, h2, label, form {
+p, span, input[type="text"], h1, h2, label, form, .colorbar div, .btn {
   font-family: "Lato", sans-serif;
   font-weight: lighter;
   font-size: 32px;
@@ -24,7 +24,7 @@ h2 {
   font-weight: bolder;
   margin-bottom: 0.5em;
 }
-label, .checkboxes * {
+label, .checkboxes *, .colorbar div {
   font-size: 20px;
 }
 input[type="checkbox"] {
@@ -49,6 +49,12 @@ circle,
   transition: fill .5s;
 }
 
+g.nodes g {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
 /*hover*/
 g.nodes g:hover circle {
   stroke: black;
@@ -58,8 +64,22 @@ g.nodes g:hover circle {
 g.nodes g:hover text {
   font-size: 20pt;
   font-weight: bold;
-
 }
+
+
+/*tooltiptext*/
+/* Tooltip container */
+div.tooltiptext {
+  position: absolute;
+  width: 200px;
+  height: auto;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
 
 line,
 .links line {
@@ -87,6 +107,41 @@ div.functionmenu:hover {
 .infocontainer {
   margin-right: 100px;
   display: inline-block;
+}
+
+/*Centrality*/
+.colorbar {
+  width: 100%;
+  max-width: 1000px;
+}
+.text-right {
+  float: right;
+  text-align: right;
+}
+.text-left {
+  float: left;
+}
+
+.btn {
+  background-color: #D3D3D3;
+  border: none;
+  border-radius: 4px;
+  color: black;
+  padding: 8px 10px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.btn:hover {
+  background-color: #3A5468;
+  color: white;
 }
 
 /* SLIDER */
