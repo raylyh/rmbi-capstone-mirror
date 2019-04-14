@@ -72,6 +72,7 @@ g.nodes g:hover text {
 div.tooltiptext {
   position: absolute;
   width: 200px;
+  height: auto;
   background-color: #555;
   color: #fff;
   text-align: center;
