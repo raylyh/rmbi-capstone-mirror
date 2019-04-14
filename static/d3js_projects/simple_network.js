@@ -21,7 +21,6 @@ var link = svg.append("g")  // 'link' needs to be declared before 'node'
 var node = svg.append("g")
   .attr("class", "nodes");
 
-
 var t = svg.transition().duration(500);
 
 var bbox = d3.select("svg.canvas").node().getBoundingClientRect();
@@ -93,7 +92,8 @@ function draw(data) {
           .attr("x", d => d.x + radius)
           .attr("y", d => d.y + 5)
         .call(enter => enter.transition(t)  //animation
-          .attr("opacity", 1.0));
+          .attr("opacity", 1.0))
+          .on("click", function() { window.open("http://google.com"); });
         }),
       update => update,
       exit => exit  // delete animation
