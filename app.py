@@ -15,8 +15,9 @@ config = yaml.load(f)
 @app.route("/", methods=["GET", "POST"])
 def initialize():
     customerID = None
-    if request.method == "POST":
-        customerID = request.form.get("customerID", None) # get the customer id from website
+    if request.method == "GET":
+        customerID = request.values.get("customerID", None) # get the customer id from website
+        logger.info(customerID)
     if customerID:
         id = int(customerID) # change it to int type
     else:

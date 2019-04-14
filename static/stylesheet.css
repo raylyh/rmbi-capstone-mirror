@@ -49,6 +49,12 @@ circle,
   transition: fill .5s;
 }
 
+g.nodes g {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
 /*hover*/
 g.nodes g:hover circle {
   stroke: black;
@@ -58,8 +64,21 @@ g.nodes g:hover circle {
 g.nodes g:hover text {
   font-size: 20pt;
   font-weight: bold;
-
 }
+
+
+/*tooltiptext*/
+/* Tooltip container */
+div.tooltiptext {
+  position: absolute;
+  width: 200px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
 
 line,
 .links line {

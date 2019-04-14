@@ -7,26 +7,30 @@ var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
 var previous_click_node = null;
 
+var tooltip = d3.select("body").append("div")
+  .attr("class", "tooltiptext")
+  .style("opacity", 0);
+
 var svg = d3.select("body").append("svg")
-    .attr("class", "canvas")
-    .attr("width", "100%")
-    .attr("height", "60vh")
-    .append("g");
+  .attr("class", "canvas")
+  .attr("width", "100%")
+  .attr("height", "80vh")
+  .append("g");
 var link = svg.append("g")  // 'link' needs to be declared before 'node'
   .attr("class", "links");  // so that link is below node in graph
 var node = svg.append("g")
   .attr("class", "nodes");
 
 
-var t = svg.transition().duration(750);
+var t = svg.transition().duration(500);
 
 var bbox = d3.select("svg.canvas").node().getBoundingClientRect();
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(link => link.id).distance(90))
-    .force("charge", d3.forceManyBody().strength(-125*5))
-    .force("center", d3.forceCenter(bbox.width/2, bbox.height/2))
-    .force("collision", d3.forceCollide(radius*2));
+  .force("link", d3.forceLink().id(link => link.id).distance(90))
+  .force("charge", d3.forceManyBody().strength(-125*5))
+  .force("center", d3.forceCenter(bbox.width/2, bbox.height/2))
+  .force("collision", d3.forceCollide(radius*2));
 
 var first_run = true;
 // *****
@@ -211,6 +215,15 @@ function draw(data) {
     }
   }
 
+  function showTooltipInfo(d) {
+    var choices = d3.selectAll(".TableFilter").nodes().filter(x => x.checked).map(x => x.id);
+    var tooltip_string = "";
+    for (var i in choices) {
+      tooltip_string += choices[i] + ": " + d[choices[i]] + "<br/>";
+    }
+    tooltip.html(tooltip_string);
+  }
+
   function mousedown(d) {
     // define class for clicked node
     if (d3.select(this).classed("clicked")) {
@@ -227,7 +240,10 @@ function draw(data) {
 
   function mouseover(d) {
     d3.select(this).raise();  // put the hovered element as first element
-
+    // show tooltip
+    showTooltipInfo(d);
+    tooltip.style("opacity", 1);
+    // highlight nearest neighbour
     var current_id = d.id;
     var opacity_link_data = link.selectAll("g").data().filter(link => link.source.id == current_id || link.target.id == current_id); // get the link data which contains of current id
 
@@ -270,6 +286,7 @@ function draw(data) {
     node.selectAll("circle").style("opacity", 1);
     link.selectAll("line").style("stroke-width", 1);
     d3.selectAll('text').style("opacity", 1);
+    tooltip.style("opacity", 0);
   }
 
 }
