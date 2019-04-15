@@ -50,11 +50,11 @@ def createTable(cursor):
     try:
         # cursor execute a sql comment
         cursor.execute("""CREATE TABLE CustomerInfo (
-            CustomerID BIGINT, Name VARCHAR(100), Age INT, Gender VARCHAR(20), Address VARCHAR(200), SmokingStatus VARCHAR(100), Education VARCHAR(100),Health VARCHAR(100)
-            primary key (customerID))""")
+            CustomerID BIGINT, Name VARCHAR(100), Age INT, Gender VARCHAR(20), Address VARCHAR(200), SmokingStatus VARCHAR(100), Education VARCHAR(100), Health VARCHAR(100), Link VARCHAR(200),
+            primary key (CustomerID))""")
         logger.info("Success in creating CustomerInfo Table")
     except Exception as e:
-        logger.error("CustomerInfo Table already exist - {}".format(e))
+        logger.error("Problem in CustomerInfo Table - {}".format(e))
     try:
         # cursor execute a sql comment
         cursor.execute("""CREATE TABLE CustomerRelationship (
@@ -63,24 +63,27 @@ def createTable(cursor):
             foreign key (customerID2) references CustomerInfo(customerID))""")
         logger.info("Success in creating CustomerRelationship Table")
     except Exception as e:
-        logger.error("CustomerRelationship Table already exist - {}".format(e))
+        logger.error("Problem in CustomerRelationship Table - {}".format(e))
 
 
 def insertData(cursor, client):
-    sql = "INSERT INTO CustomerInfo (CustomerID, Name, Age, Gender, Address,SmokingStatus,Education,Health) VALUES (%s, %s, %s, %s, %s,%s, %s, %s)"
+    sql = "INSERT INTO CustomerInfo (CustomerID, Name, Age, Gender, Address, SmokingStatus, Education, Health, Link) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s)"
     #customerID is in range of [1, 297111]
-    #tuple: (customerID, name, age, gender, address)
+    #tuple: (CustomerID, Name, Age, Gender, Address, Smoking, Education, Health, Link)
 
-    val = [(i,
-        names.get_full_name(),
-        random.randint(18,80),
-        random.choice(['M','F']),
+    val = [(
+        i,      #CustomerID
+        names.get_full_name(),      #Name
+        random.randint(18,80),      #Age
+        random.choice(['M','F']),   #Gender
         random.choice(['Yuen Long','Sha Tin','Tai Po','Sham Shui Po','Sai Kung','Southern',
         'Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong',
-        'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands']),
-        random.choice(['Smoker','Non Smoker']),
-        random.choice(['Primary','Secondary','Tertiary']),
-        random.choice(['Normal','Hypertension','Cancer','Diabetes'])) for i in range(1, 297112)]
+        'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands']),     #Address
+        random.choice(['Smoker','Non Smoker']),             #Smoking
+        random.choice(['Primary','Secondary','Tertiary']),  #Education
+        random.choice(['Normal','Hypertension','Cancer','Diabetes']),   #Health
+        random.choice(['yahoo.com', 'facebook.com', 'google.com'])     #Link
+        ) for i in range(1, 297112)]
     logger.info("Finish generating random customer info")
     try:
         cursor.executemany(sql, val)

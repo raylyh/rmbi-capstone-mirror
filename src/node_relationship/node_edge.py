@@ -63,8 +63,8 @@ def get_node_edge(customer_id, config, degree=6):
         # get info of customers in current degree
         cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + tuple_degree)
         for customer in cursor:
-            id, name, age, gender, address,smoking,education,health = customer
-            row = dict(id=id, name=name, age=age, gender=gender, address=address, smoking = smoking, education = education, health = health, group=i)
+            id, name, age, gender, address, smoking, education, health, link = customer
+            row = dict(id=id, name=name, age=age, gender=gender, address=address, smoking=smoking, education=education, health=health, link=link, group=i)
             nodes.append(row)
 
         # remove the original customer id in the list
