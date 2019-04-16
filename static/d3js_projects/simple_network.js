@@ -39,6 +39,7 @@ var simulation = d3.forceSimulation()
 var first_run = true;
 var normal_bool = true;
 var sosc_bool = false;
+var custseg_bool = false;
 var slider_change = false;
 var pre_sosc = "#reset";
 var pre_custseg = "#reset";
@@ -140,6 +141,10 @@ function draw(data) {
 
   if (sosc_bool){
     btntog(pre_sosc, link_data);
+  }
+
+  if (custseg_bool){
+    custseg(pre_custseg, node_data);
   }
 
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
@@ -347,6 +352,7 @@ function btntog(d,link_data){
   // create a jsnx graph by our data
   sosc_bool = true;
   normal_bool = false;
+  custseg_bool = false;
 
   svg.select(".legend").selectAll("g").remove();
 
@@ -553,6 +559,9 @@ function visualization(new_color){
 function custseg(d, node_data){
 
   normal_bool = false;
+  custseg_bool = true;
+  sosc_bool = false;
+
   svg.select(".legend").selectAll("g").remove();
   if (node_data == "current"){
     var raw_node = d3.select("g.nodes").selectAll("g").data();
@@ -560,10 +569,10 @@ function custseg(d, node_data){
     var raw_node = node_data;
   }
 
-  if (d == "#age"){
+  if (d == "#age" && (pre_custseg != d || (slider_change && pre_custseg == "#age"))) {
     // 0 - 10, 11 - 20
+    pre_custseg = d;
     var age = [];
-
     for (var i in raw_node){
       if (raw_node[i].age.toString().length == 1){
       age.push([raw_node[i].id, d3.interpolateReds(0)]);
@@ -586,8 +595,9 @@ function custseg(d, node_data){
 
     visualization(age);
 
-  } else if (d == "#gend"){
+  } else if (d == "#gend" && (pre_custseg != d || (slider_change && pre_custseg == "#gend"))){
     // M & F
+    pre_custseg = d;
     var gender = [];
     for (var i in raw_node){
       if (raw_node[i].gender == "M") {
@@ -612,11 +622,18 @@ function custseg(d, node_data){
 
     visualization(gender);
 
-  } else if (d == "#addr"){
+  } else if (d == "#addr" && (pre_custseg != d || (slider_change && pre_custseg == "#addr"))){
     //
+    pre_custseg = d;
 
-  } else if (d == "#smok") {
+    
+
+
+
+
+  } else if (d == "#smok"  && (pre_custseg != d || (slider_change && pre_custseg == "#smok"))) {
     // Smoker & Non-somker
+    pre_custseg = d;
     var smoker = [];
     for (var i in raw_node){
       if (raw_node[i].gender == "Smoker"){
@@ -641,7 +658,7 @@ function custseg(d, node_data){
 
     visualization(smoker);
 
-  } else if (d == "#edu") {
+  } else if (d == "#edu"  && (pre_custseg != d || (slider_change && pre_custseg == "#edu"))) {
     // Primary,Secondary,Tertiary
     var education = [];
     for (var i in raw_node){
@@ -669,8 +686,9 @@ function custseg(d, node_data){
 
     visualization(education);
 
-  } else if (d == "#heal") {
+  } else if (d == "#heal"  && (pre_custseg != d || (slider_change && pre_custseg == "#heal"))) {
     // Normal, Hypertension, Cancer, Diabetes
+    pre_custseg = d;
     var health = [];
     for (var i in raw_node){
       if (raw_node[i].health == "Normal") {
@@ -699,9 +717,10 @@ function custseg(d, node_data){
 
     visualization(health);
 
-  } else if (d == "#reset") {
-
+  } else if (d == "#reset" && pre_custseg != d) {
+    pre_custseg = d;
     normal_bool = true;
+    custseg_bool = false;
     svg.select(".legend").selectAll("g").remove();
 
     var sequentialScale = d3.scaleSequential(d3.interpolateSpectral)
