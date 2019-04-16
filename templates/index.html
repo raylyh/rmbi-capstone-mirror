@@ -12,6 +12,7 @@
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
 		<script src="{{ url_for('static', filename='jsnetworkx.js')}}"></script>
+		<script src="{{ url_for('static', filename='legend.js')}}"></script>
 	</head>
 	<body>
 		<h1>Capstone Project - Network Visualization</h1>
@@ -72,20 +73,15 @@
 		</div>
 		<div class="sosc">
 			<h2>Centrality Measurement</h2>
-			<div class="colorbar">
-				<div class="text-left">Least Central</div>
-        <div class="text-right">Most Central</div>
-				<img src="{{ url_for('static', filename='YlOrRd.png')}}" width="100%" height="40" alt="YlOrRd">
-			</div>
 			<div class="row">
               <div class="col-xs-8 text-center">
-                  <p style="margin-bottom:.1em">Centrality type:</p>
+                  <p style="margin-bottom:.1em"></p>
                   <div class="btn-group" role="group">
-                  <button id="deg" onclick="btntog('#deg')" type="button" class="btn btn-default active">Degree</button>
+                  <button id="deg" onclick="btntog('#deg', 'current')" type="button" class="btn btn-default active">Degree</button>
                   <!-- button id="clo" onclick="btntog('#clo')" type="button" class="btn btn-default">Closeness</button -->
-                  <button id="bet" onclick="btntog('#bet')" type="button" class="btn btn-default">Betweenness</button>
-                  <button id="eig" onclick="btntog('#eig')" type="button" class="btn btn-default">Eigenvector</button>
-									<button id="reset" onclick="btntog('#reset')" type="button" class="btn btn-default">Reset</button>
+                  <button id="bet" onclick="btntog('#bet','current')" type="button" class="btn btn-default">Betweenness</button>
+                  <button id="eig" onclick="btntog('#eig','current')" type="button" class="btn btn-default">Eigenvector</button>
+									<button id="reset" onclick="btntog('#reset','current')" type="button" class="btn btn-default">Reset</button>
                     </div>
              </div>
       </div>
@@ -95,13 +91,15 @@
 			<h2>Customer Segmentation by Information</h2>
 			<div class="row">
 							<div class="col-xs-8 text-center">
-									<p style="margin-bottom:.1em">Centrality type:</p>
+									<p style="margin-bottom:.1em"></p>
 									<div class="btn-group" role="group">
-									<button id="deg" onclick="btntog('#deg')" type="button" class="btn btn-default active">Degree</button>
-									<!-- button id="clo" onclick="btntog('#clo')" type="button" class="btn btn-default">Closeness</button -->
-									<button id="bet" onclick="btntog('#bet')" type="button" class="btn btn-default">Betweenness</button>
-									<button id="eig" onclick="btntog('#eig')" type="button" class="btn btn-default">Eigenvector</button>
-									<button id="reset" onclick="btntog('#reset')" type="button" class="btn btn-default">Reset</button>
+									<button id="age" onclick="custseg('#age','current')" type="button" class="btn btn-default active">Age</button>
+									<button id="gend" onclick="custseg('#gend','current')" type="button" class="btn btn-default">Gender</button>
+									<button id="addr" onclick="custseg('#addr','current')" type="button" class="btn btn-default">Address</button>
+									<button id="smok" onclick="custseg('#smok','current')" type="button" class="btn btn-default">Smoking</button>
+									<button id="edu" onclick="custseg('#edu','current')" type="button" class="btn btn-default">Health</button>
+									<button id="heal" onclick="custseg('#heal','current')" type="button" class="btn btn-default">Health</button>
+									<button id="reset" onclick="custseg('#reset','current')" type="button" class="btn btn-default">Reset</button>
 										</div>
 						 </div>
 			</div>

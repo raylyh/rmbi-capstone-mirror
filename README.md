@@ -33,14 +33,19 @@ The database containing the relationship data should have the following tables a
 +----------------------+
 
 CustomerInfo
+
 +------------+--------------+------+-----+---------+-------+
 | Field      | Type         | Null | Key | Default | Extra |
 +------------+--------------+------+-----+---------+-------+
-| customerID | bigint(20)   | NO   | PRI | NULL    |       |
-| name       | varchar(100) | YES  |     | NULL    |       |
-| age        | int(11)      | YES  |     | NULL    |       |
-| gender     | varchar(20)  | YES  |     | NULL    |       |
+| CustomerID | bigint(20)   | NO   | PRI | NULL    |       |
+| Name       | varchar(100) | YES  |     | NULL    |       |
+| Age        | int(11)      | YES  |     | NULL    |       |
+| Gender     | varchar(20)  | YES  |     | NULL    |       |
 | Address    | varchar(200) | YES  |     | NULL    |       |
+| SmokingStatus| varchar(100) | YES  |     | NULL    |       |
+| Education    | varchar(100) | YES  |     | NULL    |       |
+| Health     | varchar(100) | YES  |     | NULL    |       |
+| Link       | varchar(200) | YES  |     | NULL    |       |
 +------------+--------------+------+-----+---------+-------+
 Note: CustomerInfo can have more fields/columns describing the customer.
 The attributes here are for illustration purposes.
@@ -102,6 +107,13 @@ cursor, client = connect_to_mysql(config)
 from src.mysql.mysql_in_python import main
 main()
 ```
+
+or
+
+```
+python -m unittest dev/mysql/insertdata.py
+```
+
 [back](#user-defined-function)
 
 ------
