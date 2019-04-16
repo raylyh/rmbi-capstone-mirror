@@ -626,7 +626,7 @@ function custseg(d, node_data){
     //
     pre_custseg = d;
 
-    
+
 
 
 
@@ -660,6 +660,7 @@ function custseg(d, node_data){
 
   } else if (d == "#edu"  && (pre_custseg != d || (slider_change && pre_custseg == "#edu"))) {
     // Primary,Secondary,Tertiary
+    pre_custseg = d;
     var education = [];
     for (var i in raw_node){
       if (raw_node[i].education == "Primary") {
