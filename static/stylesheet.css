@@ -3,6 +3,9 @@ body {
   margin: 50px;
 }
 
+body, html {
+  height: 100%;
+}
 
 
 /* general texts */
@@ -142,6 +145,19 @@ div.functionmenu:hover {
 .btn:hover {
   background-color: #3A5468;
   color: white;
+}
+
+/*main canvas*/
+.panel {
+  height: 100%;
+  width: 900px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.panel.right {
+  position: fixed;
+  height: 80%;
 }
 
 /* SLIDER */

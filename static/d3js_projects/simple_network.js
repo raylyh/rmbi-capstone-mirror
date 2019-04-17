@@ -7,14 +7,14 @@ var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
 var previous_click_node = null;
 
-var tooltip = d3.select("body").append("div")
+var tooltip = d3.select("body").select(".right").append("div")
   .attr("class", "tooltiptext")
   .style("opacity", 0);
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("body").select(".right").append("svg")
   .attr("class", "canvas")
   .attr("width", "100%")
-  .attr("height", "80vh")
+  .attr("height", "100%")
   .append("g");
 var link = svg.append("g")  // 'link' needs to be declared before 'node'
   .attr("class", "links");  // so that link is below node in graph
