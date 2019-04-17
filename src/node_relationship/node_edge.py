@@ -69,7 +69,7 @@ def get_node_edge(customer_id, config, degree=6):
             id, name, age, gender, address, smoking, education, health, link = customer
             location = geolocator.geocode(address)
             latitude, longitude = location.latitude, location.longitude
-            row = dict(id=id, name=name, age=age, gender=gender, address=address,latitude = latitude,longitude=longitude, smoking=smoking, education=education, health=health, link=link, group=i)
+            row = dict(id=id, name=name, age=age, gender=gender, address=address, latitude=latitude, longitude=longitude, smoking=smoking, education=education, health=health, link=link, group=i)
             nodes.append(row)
 
         # remove the original customer id in the list

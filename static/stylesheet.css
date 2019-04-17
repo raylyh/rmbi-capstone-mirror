@@ -149,15 +149,14 @@ div.functionmenu:hover {
 
 /*main canvas*/
 .panel {
-  height: 100%;
+  height: auto;
   width: 900px;
   display: inline-block;
   vertical-align: top;
 }
 
 .panel.right {
-  position: fixed;
-  height: 80%;
+  height: 900px;
 }
 
 /* SLIDER */
