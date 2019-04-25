@@ -2,7 +2,6 @@ from src.logger.logger import set_up_logger
 from src.mysql.mysql_in_python import connect_to_mysql
 import pymysql
 import yaml
-from geopy.geocoders import Nominatim
 
 __name__ = 'Node'
 logger = set_up_logger(__name__)
@@ -38,8 +37,6 @@ def get_node_edge(customer_id, config, degree=6):
     remove_id = []
     # the customer id in current degree (i.e. now is 0)
     customer_id_in_degree = [customer_id]
-    # get the latitude and longitude of customer address
-    geolocator = Nominatim(user_agent="google")
 
     for i in range(degree+1):
         logger.info("Degree {}: {}".format(i, customer_id_in_degree))
@@ -67,9 +64,7 @@ def get_node_edge(customer_id, config, degree=6):
         cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + tuple_degree)
         for customer in cursor:
             id, name, age, gender, address, smoking, education, health, link = customer
-            location = geolocator.geocode(address)
-            latitude, longitude = location.latitude, location.longitude
-            row = dict(id=id, name=name, age=age, gender=gender, address=address, latitude=latitude, longitude=longitude, smoking=smoking, education=education, health=health, link=link, group=i)
+            row = dict(id=id, name=name, age=age, gender=gender, address=address,smoking=smoking, education=education, health=health, link=link, group=i)
             nodes.append(row)
 
         # remove the original customer id in the list

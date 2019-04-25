@@ -108,7 +108,7 @@ function draw(data) {
           .attr("y", d => d.y + 5)
         .call(enter => enter.transition(t)  //animation
           .attr("opacity", 1.0))
-        .on("click", function() { window.open(d => d.link); });
+        .on("click", d => window.open(url="http://".concat(d.link)));
         }),
       update => update,
       exit => exit  // delete animation
