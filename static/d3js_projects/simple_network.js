@@ -623,13 +623,63 @@ function custseg(d, node_data){
     visualization(gender);
 
   } else if (d == "#addr" && (pre_custseg != d || (slider_change && pre_custseg == "#addr"))){
-    //
+    // 'Yuen Long','Sha Tin','Tai Po','Sham Shui Po','Sai Kung','Southern',
+    // 'Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong',
+    // 'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands'
     pre_custseg = d;
+    var address = [];
+    for (var i in raw_node){
+      if (raw_node[i].address == "Yuen Long") {
+      address.push([raw_node[i].id, 'rgb(189, 213, 225)']);
+    } else if (raw_node[i].address == "Sha Tin") {
+      address.push([raw_node[i].id, "rgb(73, 100, 65)"]);
+    } else if (raw_node[i].address == "Tai Po") {
+      address.push([raw_node[i].id, "rgb(120, 158, 99)"]);
+    } else if (raw_node[i].address == "Sham Shui Po") {
+      address.push([raw_node[i].id, "rgb(184, 174, 184)"]);
+    } else if (raw_node[i].address == "Sai Kung") {
+      address.push([raw_node[i].id, "rgb(198, 162, 91)"]);
+    } else if (raw_node[i].address == "Southern") {
+      address.push([raw_node[i].id, "rgb(239, 122, 90)"]);
+    } else if (raw_node[i].address == "Yau Tsim Mong") {
+      address.push([raw_node[i].id, "rgb(163, 132, 113)"]);
+    } else if (raw_node[i].address == "Wan Chai") {
+      address.push([raw_node[i].id, "rgb(168, 37, 7)"]);
+    } else if (raw_node[i].address == "Eastern") {
+      address.push([raw_node[i].id, "rgb(246, 177, 149)"]);
+    } else if (raw_node[i].address == "Wong Tai Sin") {
+      address.push([raw_node[i].id, "rgb(218, 181, 123)"]);
+    } else if (raw_node[i].address == "Kwun Tong") {
+      address.push([raw_node[i].id, "rgb(195, 189, 127)"]);
+    } else if (raw_node[i].address == "Kwai Tsing") {
+      address.push([raw_node[i].id, "rgb(122, 114, 147)"]);
+    } else if (raw_node[i].address == "North") {
+      address.push([raw_node[i].id, "rgb(172, 188, 162)"]);
+    } else if (raw_node[i].address == "Kowloon City") {
+      address.push([raw_node[i].id, "rgb(199, 161, 124)"]);
+    } else if (raw_node[i].address == "Tuen Mun") {
+      address.push([raw_node[i].id, "rgb(114, 142, 154)"]);
+    } else if (raw_node[i].address == "Tsuen Wan") {
+      address.push([raw_node[i].id, "rgb(141, 161, 168)"]);
+    } else if (raw_node[i].address == "Islands") {
+      address.push([raw_node[i].id, "rgb(222, 205, 126)"]);
+    }
+  }
 
+    var sequentialScale = d3.scaleOrdinal()
+      .domain(["Yuen Long","Sha Tin", 'Tai Po','Sham Shui Po','Sai Kung','Southern','Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong','Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands'])
+      .range(['rgb(189, 213, 225)', "rgb(73, 100, 65)", "rgb(120, 158, 99)", "rgb(184, 174, 184)", "rgb(198, 162, 91)", "rgb(239, 122, 90)", "rgb(163, 132, 113)", "rgb(168, 37, 7)", "rgb(246, 177, 149)", "rgb(218, 181, 123)", "rgb(195, 189, 127)", "rgb(122, 114, 147)", "rgb(172, 188, 162)", "rgb(199, 161, 124)", "rgb(114, 142, 154)", "rgb(141, 161, 168)", "rgb(222, 205, 126)"]);
 
+    var logLegend = d3.legendColor()
+      .title("Address Color")
+      .titleWidth(100)
+      .cells(17)
+      .scale(sequentialScale);
 
+    svg.select(".legend").append('g')
+      .call(logLegend);
 
-
+    visualization(address);
 
   } else if (d == "#smok"  && (pre_custseg != d || (slider_change && pre_custseg == "#smok"))) {
     // Smoker & Non-somker
