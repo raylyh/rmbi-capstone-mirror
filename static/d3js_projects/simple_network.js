@@ -153,7 +153,7 @@ function draw(data) {
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   // hover, click, and double-click on a node
-  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mouseout", mouseout);
+  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mousemove", mousemove).on("mouseout", mouseout);
 
   function showWeight() {
     if (d3.select("#showWeight").property("checked")) {
@@ -329,6 +329,11 @@ function draw(data) {
     link.selectAll("line").style("stroke-width", 1);
     d3.selectAll('text').style("opacity", 1);
     tooltip.style("opacity", 0);
+  }
+
+  function mousemove(d) {
+    tooltip.style("left", (d3.event.pageX+70) + "px")
+      .style("top", (d3.event.pageY) + "px")
   }
 
 }
