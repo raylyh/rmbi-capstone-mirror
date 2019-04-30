@@ -3,10 +3,13 @@ body {
   margin: 50px;
 }
 
+body, html {
+  height: 100%;
+}
 
 
 /* general texts */
-p, span, input[type="text"], h1, h2, label, form {
+p, span, input[type="text"], h1, h2, label, form, .colorbar div, .btn {
   font-family: "Lato", sans-serif;
   font-weight: lighter;
   font-size: 32px;
@@ -24,7 +27,7 @@ h2 {
   font-weight: bolder;
   margin-bottom: 0.5em;
 }
-label, .checkboxes * {
+label, .checkboxes *, .colorbar div {
   font-size: 20px;
 }
 input[type="checkbox"] {
@@ -43,12 +46,45 @@ circle,
  	stroke: #666666;
  	stroke-width: 2px;
 }
-.hovered circle {
-  stroke: #DBDBDB;
-}
 .clicked circle {
   fill: #001C44;
+  -webkit-transition: .5s; /* 0.2 seconds transition on hover */
+  transition: fill .5s;
 }
+
+g.nodes g {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/*hover*/
+g.nodes g:hover circle {
+  stroke: black;
+  -webkit-transition: .5s; /* 0.2 seconds transition on hover */
+  transition: stroke .5s;
+}
+g.nodes g:hover text {
+  font-size: 20pt;
+  font-weight: bold;
+}
+
+
+/*tooltiptext*/
+/* Tooltip container */
+div.tooltiptext {
+  font-family: "Lato", sans-serif;
+  font-weight: normal;
+  position: absolute;
+  width: 200px;
+  height: auto;
+  background-color: #555;
+  color: #fff;
+  text-align: left;
+  border-radius: 5px;
+  padding: 5px;
+}
+
 
 line,
 .links line {
@@ -60,10 +96,6 @@ text {
   font-size: 14pt;
   font-family: "Courier New", Courier, monospace;
 }
-.hovered text {
-  font-size: 20pt;
-  font-weight: bold;
-}
 
 table th,
 table td {
@@ -73,9 +105,47 @@ table td {
   border: 1px solid black;
 }
 
+div.functionmenu:hover {
+  background-color: #F7FAFF;
+}
+
 .infocontainer {
   margin-right: 100px;
   display: inline-block;
+}
+
+.btn {
+  background-color: #D3D3D3;
+  border: none;
+  border-radius: 4px;
+  color: black;
+  padding: 8px 10px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.btn:hover {
+  background-color: #3A5468;
+  color: white;
+}
+
+/*main canvas*/
+.panel {
+  height: auto;
+  width: 900px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.panel.right {
+  height: 900px;
 }
 
 /* SLIDER */

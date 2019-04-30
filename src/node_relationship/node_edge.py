@@ -7,6 +7,28 @@ __name__ = 'Node'
 logger = set_up_logger(__name__)
 
 def get_node_edge(customer_id, config, degree=6):
+    """Function to get all relationship in 6 degree
+
+    Logger is use to indicate errors in function. It is very useful in development.
+
+    Args:
+        customer_id (int): the id of a customer
+        config (dict): the information of mysql
+        degree (int): the max number of degree that user looking for
+
+    Returns:
+        two lists containing the information of nodes and links
+
+    Example:
+        [{'source': 1, 'target': 81216, 'weight': 4, 'type': 4, 'group': 1},
+         {'source': 81216, 'target': 1, 'weight': 4, 'type': 24, 'group': 1},
+         {'source': 81216, 'target': 95808, 'weight': 4, 'type': 24, 'group': 2},
+         {'source': 81216, 'target': 95202, 'weight': 4, 'type': 25, 'group': 2},
+         {'source': 81216, 'target': 81230, 'weight': 4, 'type': 14, 'group': 2},
+         {'source': 95808, 'target': 81216, 'weight': 4, 'type': 4, 'group': 2},
+         {'source': 81230, 'target': 81216, 'weight': 4, 'type': 2, 'group': 2},
+         {'source': 95202, 'target': 81216, 'weight': 4, 'type': 10, 'group': 2}]
+    """
     # connect to database
     cursor, client = connect_to_mysql(config)
     # create a list to store nodes and links
@@ -41,8 +63,8 @@ def get_node_edge(customer_id, config, degree=6):
         # get info of customers in current degree
         cursor.execute("SELECT * FROM CustomerInfo WHERE customerID IN " + tuple_degree)
         for customer in cursor:
-            id, name, age, gender, address = customer
-            row = dict(id=id, name=name, age=age, gender=gender, address=address, group=i)
+            id, name, age, gender, address, smoking, education, health, link = customer
+            row = dict(id=id, name=name, age=age, gender=gender, address=address,smoking=smoking, education=education, health=health, link=link, group=i)
             nodes.append(row)
 
         # remove the original customer id in the list
