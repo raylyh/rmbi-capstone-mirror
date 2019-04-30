@@ -60,8 +60,6 @@ function draw(data) {
   var current_customer_info = data.nodes.filter(node => node.group == 0)[0]; // get the information of current selected customer -- for initialize the table information
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
 
-  var valid_key = valid_key.filter(key => key != "latitude" && key != "longitude" && key != "link"); // remove two key that using in customer-segmentation
-
   simulation.nodes(node_data).force("link").links(link_data);
 
   // pause the simulation to load for the FIRST time
@@ -393,7 +391,7 @@ function btntog(d,link_data){
 	G.addEdgesFrom(link);
 
   // for degree centrality
-  if (d == "#deg" && (pre_sosc != d || (slider_change && pre_sosc == "#deg"))){
+  if (d == "#deg" || ((slider_change && pre_sosc == "#deg"))){
     pre_sosc = "#deg";
 
     var link = [];
@@ -452,7 +450,7 @@ function btntog(d,link_data){
     // visualization(new_color);
 
   // for betweenness centrality
-  }else if (d == "#bet" && (pre_sosc != d || (slider_change && pre_sosc == "#bet"))){
+}else if (d == "#bet" || ((slider_change && pre_sosc == "#bet"))){
     // the package helps calculate the value
     pre_sosc = "#bet";
     var temp_value = jsnx.betweennessCentrality(G)._numberValues;
@@ -467,24 +465,27 @@ function btntog(d,link_data){
     visualization(new_color);
 
   // for eigenvector centrality
-  } else if (d == "#eig" &&  (pre_sosc != d || (slider_change && pre_sosc == "#eig"))){
+} else if (d == "#eig" ||  ((slider_change && pre_sosc == "#eig"))){
     pre_sosc = "#eig";
 
     // the package helps calculate the value
     // max iter = 100000, ensure it can coverage
-    var temp_value = jsnx.eigenvectorCentrality(G,{maxIter: 100000})._numberValues;
+    var temp_value = null;
+    try {
+      temp_value = jsnx.eigenvectorCentrality(G,{maxIter: 100000})._numberValues;
+      var count_list = [];
+      for (i in temp_value){
+        count_list.push([i,temp_value[i]]);
+      }
 
-    // change to the required nested list for function
-    var count_list = [];
-    for (i in temp_value){
-      count_list.push([i,temp_value[i]]);
+      var new_color = color_convertor(count_list);
+      visualization(new_color);
+      }
+    catch(err) {
+      alert("eigenvector calculation fail due to " +  err.message);
     }
 
-    var new_color = color_convertor(count_list);
-    visualization(new_color);
-
-
-  } else if (d == '#reset' && pre_sosc != d){
+  } else if (d == '#reset'){
     pre_sosc = d;
     sosc_bool = false;
     normal_bool = true;
@@ -574,7 +575,7 @@ function custseg(d, node_data){
     var raw_node = node_data;
   }
 
-  if (d == "#age" && (pre_custseg != d || (slider_change && pre_custseg == "#age"))) {
+  if (d == "#age" || ((slider_change && pre_custseg == "#age"))) {
     // 0 - 10, 11 - 20
     pre_custseg = d;
     var age = [];
@@ -600,7 +601,7 @@ function custseg(d, node_data){
 
     visualization(age);
 
-  } else if (d == "#gend" && (pre_custseg != d || (slider_change && pre_custseg == "#gend"))){
+  } else if (d == "#gend" || ((slider_change && pre_custseg == "#gend"))){
     // M & F
     pre_custseg = d;
     var gender = [];
@@ -627,7 +628,7 @@ function custseg(d, node_data){
 
     visualization(gender);
 
-  } else if (d == "#addr" && (pre_custseg != d || (slider_change && pre_custseg == "#addr"))){
+  } else if (d == "#addr" || ((slider_change && pre_custseg == "#addr"))){
     // 'Yuen Long','Sha Tin','Tai Po','Sham Shui Po','Sai Kung','Southern',
     // 'Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong',
     // 'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands'
@@ -686,7 +687,7 @@ function custseg(d, node_data){
 
     visualization(address);
 
-  } else if (d == "#smok"  && (pre_custseg != d || (slider_change && pre_custseg == "#smok"))) {
+  } else if (d == "#smok"  || ((slider_change && pre_custseg == "#smok"))) {
     // Smoker & Non-somker
     pre_custseg = d;
     var smoker = [];
@@ -713,7 +714,7 @@ function custseg(d, node_data){
 
     visualization(smoker);
 
-  } else if (d == "#edu"  && (pre_custseg != d || (slider_change && pre_custseg == "#edu"))) {
+  } else if (d == "#edu"  || ((slider_change && pre_custseg == "#edu"))) {
     // Primary,Secondary,Tertiary
     pre_custseg = d;
     var education = [];
@@ -742,7 +743,7 @@ function custseg(d, node_data){
 
     visualization(education);
 
-  } else if (d == "#heal"  && (pre_custseg != d || (slider_change && pre_custseg == "#heal"))) {
+  } else if (d == "#heal"  || ((slider_change && pre_custseg == "#heal"))) {
     // Normal, Hypertension, Cancer, Diabetes
     pre_custseg = d;
     var health = [];
@@ -773,7 +774,7 @@ function custseg(d, node_data){
 
     visualization(health);
 
-  } else if (d == "#reset" && pre_custseg != d) {
+  } else if (d == "#reset") {
     pre_custseg = d;
     normal_bool = true;
     custseg_bool = false;
