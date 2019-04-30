@@ -50,11 +50,11 @@ def createTable(cursor):
     try:
         # cursor execute a sql comment
         cursor.execute("""CREATE TABLE CustomerInfo (
-            customerID BIGINT, name VARCHAR(100), age INT, gender VARCHAR(20), Address VARCHAR(200),
-            primary key (customerID))""")
+            CustomerID BIGINT, Name VARCHAR(100), Age INT, Gender VARCHAR(20), Address VARCHAR(200), SmokingStatus VARCHAR(100), Education VARCHAR(100), Health VARCHAR(100), Link VARCHAR(200),
+            primary key (CustomerID))""")
         logger.info("Success in creating CustomerInfo Table")
     except Exception as e:
-        logger.error("CustomerInfo Table already exist - {}".format(e))
+        logger.error("Problem in CustomerInfo Table - {}".format(e))
     try:
         # cursor execute a sql comment
         cursor.execute("""CREATE TABLE CustomerRelationship (
@@ -63,29 +63,27 @@ def createTable(cursor):
             foreign key (customerID2) references CustomerInfo(customerID))""")
         logger.info("Success in creating CustomerRelationship Table")
     except Exception as e:
-        logger.error("CustomerRelationship Table already exist - {}".format(e))
+        logger.error("Problem in CustomerRelationship Table - {}".format(e))
 
 
 def insertData(cursor, client):
-    """Function to create temp data in MySQL
-
-    Customer data in mysql database is not provided. We create some example data in our customer relationship management database.
-
-    Args:
-        cursor: mysql cursor
-        client: mysql client
-    """
-
-    sql = "INSERT INTO CustomerInfo (customerID, name, age, gender, address) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO CustomerInfo (CustomerID, Name, Age, Gender, Address, SmokingStatus, Education, Health, Link) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s)"
     #customerID is in range of [1, 297111]
-    #tuple: (customerID, name, age, gender, address)
+    #tuple: (CustomerID, Name, Age, Gender, Address, Smoking, Education, Health, Link)
 
-    # random initialize the customer information
-    val = [(i,
-        names.get_full_name(),
-        random.randint(18,80),
-        random.choice(['M','F']),
-        "address"+str(i)) for i in range(1, 297112)]
+    val = [(
+        i,      #CustomerID
+        names.get_full_name(),      #Name
+        random.randint(18,80),      #Age
+        random.choice(['M','F']),   #Gender
+        random.choice(['Yuen Long','Sha Tin','Tai Po','Sham Shui Po','Sai Kung','Southern',
+        'Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong',
+        'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands']),     #Address
+        random.choice(['Smoker','Non Smoker']),             #Smoking
+        random.choice(['Primary','Secondary','Tertiary']),  #Education
+        random.choice(['Normal','Hypertension','Cancer','Diabetes']),   #Health
+        random.choice(['yahoo.com', 'facebook.com', 'google.com'])     #Link
+        ) for i in range(1, 297112)]
     logger.info("Finish generating random customer info")
     try:
         cursor.executemany(sql, val)
@@ -106,7 +104,6 @@ def insertData(cursor, client):
         logger.info("Inserted CustomerRelationship rows: {}".format(cursor.rowcount))
     except Exception as e:
         logger.error(e)
-
 
 def main():
     f = open('./config.yml')

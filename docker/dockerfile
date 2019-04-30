@@ -1,0 +1,7 @@
+FROM python:3.6.6
+RUN apt-get update && apt-get install -y htop
+RUN apt-get install vim -y
+RUN apt-get install -y cron
+RUN pip install mysql-server python-mysqldb
+RUN mkdir /Git
+WORKDIR /Git

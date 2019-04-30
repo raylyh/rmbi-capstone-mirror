@@ -3,6 +3,9 @@ body {
   margin: 50px;
 }
 
+body, html {
+  height: 100%;
+}
 
 
 /* general texts */
@@ -70,13 +73,16 @@ g.nodes g:hover text {
 /*tooltiptext*/
 /* Tooltip container */
 div.tooltiptext {
+  font-family: "Lato", sans-serif;
+  font-weight: normal;
   position: absolute;
   width: 200px;
+  height: auto;
   background-color: #555;
   color: #fff;
-  text-align: center;
-  border-radius: 2px;
-  pointer-events: none;
+  text-align: left;
+  border-radius: 5px;
+  padding: 5px;
 }
 
 
@@ -108,19 +114,6 @@ div.functionmenu:hover {
   display: inline-block;
 }
 
-/*Centrality*/
-.colorbar {
-  width: 100%;
-  max-width: 1000px;
-}
-.text-right {
-  float: right;
-  text-align: right;
-}
-.text-left {
-  float: left;
-}
-
 .btn {
   background-color: #D3D3D3;
   border: none;
@@ -141,6 +134,18 @@ div.functionmenu:hover {
 .btn:hover {
   background-color: #3A5468;
   color: white;
+}
+
+/*main canvas*/
+.panel {
+  height: auto;
+  width: 900px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.panel.right {
+  height: 900px;
 }
 
 /* SLIDER */

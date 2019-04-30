@@ -12,83 +12,100 @@
 		<!--d3.js-->
 		<script src="https://d3js.org/d3.v5.min.js"></script>
 		<script src="{{ url_for('static', filename='jsnetworkx.js')}}"></script>
+		<script src="{{ url_for('static', filename='legend.js')}}"></script>
 	</head>
 	<body>
 		<h1>Capstone Project - Network Visualization</h1>
-		<div class="search">
-			<p>
-				{% if customerID %}
-					Current ID: {{customerID}}
-				{% else %}
-					Random network displayed
-				{% endif %}
-			</p>
-			<form id="searchform" action ="/" method="GET">
-				Please enter Customer ID: <input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
-			</form>
-		</div>
-		<div class="functionmenu">
-			<h2>Functions</h2>
-			<div>
-				<div class="slidecontainer">
-					<p>Degree Slider: Degree <= <span id="degreesliderOutput"></span></p>
-					<input id="degreeslider" class="slider" type="range" min=1 max=6 value=6 step=1>
-					<div class="sliderticks">
-						<p>1</p>
-						<p>2</p>
-						<p>3</p>
-						<p>4</p>
-						<p>5</p>
-						<p>6</p>
+		<div class="panel left">
+			<div class="search">
+				<p>
+					{% if customerID %}
+						Current ID: {{customerID}}
+					{% else %}
+						Random network displayed
+					{% endif %}
+				</p>
+				<form id="searchform" action ="/" method="GET">
+					Please enter Customer ID: <input id="searchinput" type="text" name="customerID" placeholder="1-297111" maxlength=7 size=10 autofocus>
+				</form>
+			</div>
+			<div class="functionmenu">
+				<h2>Functions</h2>
+				<div>
+					<div class="slidecontainer">
+						<p>Degree Slider: Degree <= <span id="degreesliderOutput"></span></p>
+						<input id="degreeslider" class="slider" type="range" min=1 max=6 value=6 step=1>
+						<div class="sliderticks">
+							<p>1</p>
+							<p>2</p>
+							<p>3</p>
+							<p>4</p>
+							<p>5</p>
+							<p>6</p>
+						</div>
+					</div>
+					<div class="slidecontainer">
+						<p>Weight Slider: Edge >= <span id="strengthsliderOutput"></span></p>
+						<input id="strengthslider" class="slider" type="range" min=1 max=5 value=1 step=1>
+						<div class="sliderticks">
+							<p>1</p>
+							<p>2</p>
+							<p>3</p>
+							<p>4</p>
+							<p>5</p>
+						</div>
 					</div>
 				</div>
-				<div class="slidecontainer">
-					<p>Weight Slider: Edge >= <span id="strengthsliderOutput"></span></p>
-					<input id="strengthslider" class="slider" type="range" min=1 max=5 value=1 step=1>
-					<div class="sliderticks">
-						<p>1</p>
-						<p>2</p>
-						<p>3</p>
-						<p>4</p>
-						<p>5</p>
+				<h2>Information Selection</h2>
+				<div id="checkboxes">
+					<span>Edge:</span>
+					<label for="showWeight">Edge weight</label>
+					<input id="showWeight" type="checkbox">
+					<div id="nodecheckboxes">
+						<span>Node:</span>
 					</div>
 				</div>
 			</div>
-			<h2>Information Selection</h2>
-			<div id="checkboxes">
-				<span>Edge:</span>
-				<label for="showWeight">Edge weight</label>
-				<input id="showWeight" type="checkbox">
-				<div id="nodecheckboxes">
-					<span>Node:</span>
+			<div class="sosc">
+				<h2>Centrality Measurement</h2>
+				<div class="row">
+          <div class="col-xs-8 text-center">
+            <p style="margin-bottom:.1em"></p>
+            <div class="btn-group" role="group">
+              <button id="deg" onclick="btntog('#deg', 'current')" type="button" class="btn btn-default active">Degree</button>
+              <!-- button id="clo" onclick="btntog('#clo')" type="button" class="btn btn-default">Closeness</button -->
+              <button id="bet" onclick="btntog('#bet','current')" type="button" class="btn btn-default">Betweenness</button>
+              <button id="eig" onclick="btntog('#eig','current')" type="button" class="btn btn-default">Eigenvector</button>
+							<button id="reset" onclick="btntog('#reset','current')" type="button" class="btn btn-default">Reset</button>
+            </div>
+	        </div>
+	      </div>
+			</div>
+			<div class="customer-segmentation">
+				<h2>Customer Segmentation by Information</h2>
+				<div class="row">
+					<div class="col-xs-8 text-center">
+						<p style="margin-bottom:.1em"></p>
+						<div class="btn-group" role="group">
+							<button id="age" onclick="custseg('#age','current')" type="button" class="btn btn-default active">Age</button>
+							<button id="gend" onclick="custseg('#gend','current')" type="button" class="btn btn-default">Gender</button>
+							<button id="addr" onclick="custseg('#addr','current')" type="button" class="btn btn-default">Address</button>
+							<button id="smok" onclick="custseg('#smok','current')" type="button" class="btn btn-default">Smoking</button>
+							<button id="edu" onclick="custseg('#edu','current')" type="button" class="btn btn-default">Education</button>
+							<button id="heal" onclick="custseg('#heal','current')" type="button" class="btn btn-default">Health</button>
+							<button id="reset" onclick="custseg('#reset','current')" type="button" class="btn btn-default">Reset</button>
+						</div>
+				 	</div>
 				</div>
 			</div>
-		</div>
-		<div class="info">
-			<h2>Information Panel</h2>
-			<div id="degreeInfo" class="infocontainer"></div>
-			<div id="weightInfo" class="infocontainer"></div>
-			<div id="customerInfo" class="infocontainer"></div>
-		</div>
-		<div class="sosc">
-			<h2>Centrality Measurement</h2>
-			<div class="colorbar">
-				<div class="text-left">Least Central</div>
-        <div class="text-right">Most Central</div>
-				<img src="{{ url_for('static', filename='YlOrRd.png')}}" width="100%" height="40" alt="YlOrRd">
+			<div class="info">
+				<h2>Information Panel</h2>
+				<div id="degreeInfo" class="infocontainer"></div>
+				<div id="weightInfo" class="infocontainer"></div>
+				<div id="customerInfo" class="infocontainer"></div>
 			</div>
-			<div class="row">
-        <div class="col-xs-8 text-center">
-          <p style="margin-bottom:.1em">Centrality type:</p>
-          <div class="btn-group" role="group">
-          <button id="deg" onclick="btntog('#deg')" type="button" class="btn btn-default active">Degree</button>
-          <button id="clo" onclick="btntog('#clo')" type="button" class="btn btn-default">Closeness</button>
-          <button id="bet" onclick="btntog('#bet')" type="button" class="btn btn-default">Betweenness</button>
-          <button id="eig" onclick="btntog('#eig')" type="button" class="btn btn-default">Eigenvector</button>
-					<button id="reset" onclick="btntog('#reset')" type="button" class="btn btn-default">Reset</button>
-        </div>
-       </div>
-      </div>
+		</div>
+		<div class="panel right">
 		</div>
 	</body>
 	<!--location to my script-->

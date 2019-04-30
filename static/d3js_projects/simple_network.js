@@ -7,20 +7,23 @@ var max_degree = document.getElementById("degreeslider").value;
 var min_strength = document.getElementById("strengthslider").value;
 var previous_click_node = null;
 
-var tooltip = d3.select("body").append("div")
+var tooltip = d3.select("body").select(".right").append("div")
   .attr("class", "tooltiptext")
   .style("opacity", 0);
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("body").select(".right").append("svg")
   .attr("class", "canvas")
   .attr("width", "100%")
-  .attr("height", "80vh")
+  .attr("height", "100%")
   .append("g");
 var link = svg.append("g")  // 'link' needs to be declared before 'node'
   .attr("class", "links");  // so that link is below node in graph
 var node = svg.append("g")
   .attr("class", "nodes");
 
+svg.append("g")
+  .attr("class", "legend")
+  .attr("transform", "translate(20,20)");
 
 var t = svg.transition().duration(500);
 
@@ -32,7 +35,15 @@ var simulation = d3.forceSimulation()
   .force("center", d3.forceCenter(bbox.width/2, bbox.height/2))
   .force("collision", d3.forceCollide(radius*2));
 
+// intialize the boolean value
 var first_run = true;
+var normal_bool = true;
+var sosc_bool = false;
+var custseg_bool = false;
+var slider_change = false;
+var pre_sosc = "#reset";
+var pre_custseg = "#reset";
+
 // *****
 // MAIN FUNCTION
 // *****
@@ -48,6 +59,7 @@ function draw(data) {
   var node_data = data.nodes.filter(node => valid_id_set.has(node.id) && node.group <= max_degree); // get the link data which fulfill the requirements in Degree Slider and unique customers
   var current_customer_info = data.nodes.filter(node => node.group == 0)[0]; // get the information of current selected customer -- for initialize the table information
   var valid_key = d3.set(node_data.map(node => d3.keys(node)).flat()).values().slice(0, -5);  // slice away index, x, y, fx, fy
+
   simulation.nodes(node_data).force("link").links(link_data);
 
   // pause the simulation to load for the FIRST time
@@ -93,7 +105,8 @@ function draw(data) {
           .attr("x", d => d.x + radius)
           .attr("y", d => d.y + 5)
         .call(enter => enter.transition(t)  //animation
-          .attr("opacity", 1.0));
+          .attr("opacity", 1.0))
+        .on("click", d => window.open(url="http://".concat(d.link)));
         }),
       update => update,
       exit => exit  // delete animation
@@ -106,6 +119,31 @@ function draw(data) {
 
   //FUNCTIONALITY
   showInfo(); //intialize the website first
+  if (normal_bool){
+    if (!first_run){
+      svg.select(".legend").selectAll("g").remove();
+    }
+
+    var sequentialScale = d3.scaleSequential(d3.interpolateSpectral)
+      .domain([0,6]);
+
+    var logLegend = d3.legendColor()
+      .title("Color Index")
+      .titleWidth(100)
+      .cells(7)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+    }
+
+  if (sosc_bool){
+    btntog(pre_sosc, link_data);
+  }
+
+  if (custseg_bool){
+    custseg(pre_custseg, node_data);
+  }
 
   d3.select("#showWeight").on("change", showWeight); // show weight if checked (call this func when checkbox changes)
   d3.selectAll("#degreeslider, #strengthslider").on("change", sliderChange); // changes in slider would change the network displayed
@@ -113,7 +151,7 @@ function draw(data) {
 
   d3.select("svg.canvas").call(d3.zoom().on("zoom", zoomed)).on("dblclick.zoom", null); //zooming function, avoid zooming when double-click
   // hover, click, and double-click on a node
-  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mouseout", mouseout);
+  d3.selectAll("g.nodes g").on("mouseover", mouseover).on("mousedown", mousedown).on("dblclick", dblclicked).on("mousemove", mousemove).on("mouseout", mouseout);
 
   function showWeight() {
     if (d3.select("#showWeight").property("checked")) {
@@ -126,11 +164,14 @@ function draw(data) {
         .call(exit => exit.transition(t).attr('opacity', 0).remove()); // opacity = 0 is invisible
     }
   }
+
   function sliderChange() {
     // get the two new slider values and call draw function again.
     max_degree = document.getElementById("degreeslider").value;
     min_strength = document.getElementById("strengthslider").value;
+    slider_change = true;
     draw(data);
+    slider_change = false;
   }
 
   function showInfo() { // initialize
@@ -260,7 +301,6 @@ function draw(data) {
       } else {
         adjlist.push([opacity_link[row][0] + '-' + opacity_link[row][1]]);
       }
-
     }
 
     // lower the opacity of whole graph to 0.1
@@ -289,6 +329,11 @@ function draw(data) {
     tooltip.style("opacity", 0);
   }
 
+  function mousemove(d) {
+    tooltip.style("left", (d3.event.pageX+70) + "px")
+      .style("top", (d3.event.pageY) + "px")
+  }
+
 }
 
 // FUNCTIONS
@@ -303,13 +348,37 @@ function zoomed() {
 }
 
 
-function btntog(d){
+function btntog(d,link_data){
   // function for social network analysis
   // we use a javascript package jsnetworkx
 
   // create a jsnx graph by our data
+  sosc_bool = true;
+  normal_bool = false;
+  custseg_bool = false;
+
+  svg.select(".legend").selectAll("g").remove();
+
+  var log = d3.scaleLinear()
+      .domain([ 0,0.5, 1])
+      .range(["rgb(11, 102, 35)","rgb(255, 255, 255)", "rgb(17, 30, 108)"]);
+
+  var logLegend = d3.legendColor()
+    .title("Centrality Score")
+    .titleWidth(100)
+    .cells([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6,0.7,0.8,0.9,1])
+    .scale(log);
+
+  svg.select(".legend").append('g')
+    .call(logLegend);
+
 	var G = new jsnx.Graph();
-	var raw_link = d3.select("g.links").selectAll("g").data();
+  if (link_data == "current"){
+    var raw_link = d3.select("g.links").selectAll("g").data();
+  } else {
+    var raw_link = link_data;
+  }
+
 	var link = [];
 	for (var i in raw_link){
 		if (raw_link[i].source.id > raw_link[i].target.id){
@@ -322,8 +391,9 @@ function btntog(d){
 	G.addEdgesFrom(link);
 
   // for degree centrality
-  if (d == "#deg"){
-    var raw_link = d3.select("g.links").selectAll("g").data();
+  if (d == "#deg" || ((slider_change && pre_sosc == "#deg"))){
+    pre_sosc = "#deg";
+
     var link = [];
     for (var i in raw_link){
       if (raw_link[i].source.id > raw_link[i].target.id){
@@ -380,8 +450,9 @@ function btntog(d){
     // visualization(new_color);
 
   // for betweenness centrality
-  }else if (d == "#bet"){
+}else if (d == "#bet" || ((slider_change && pre_sosc == "#bet"))){
     // the package helps calculate the value
+    pre_sosc = "#bet";
     var temp_value = jsnx.betweennessCentrality(G)._numberValues;
 
     // change to the required nested list for function
@@ -394,22 +465,44 @@ function btntog(d){
     visualization(new_color);
 
   // for eigenvector centrality
-  } else if (d == "#eig"){
+} else if (d == "#eig" ||  ((slider_change && pre_sosc == "#eig"))){
+    pre_sosc = "#eig";
+
     // the package helps calculate the value
     // max iter = 100000, ensure it can coverage
-    var temp_value = jsnx.eigenvectorCentrality(G,{maxIter: 100000})._numberValues;
+    var temp_value = null;
+    try {
+      temp_value = jsnx.eigenvectorCentrality(G,{maxIter: 100000})._numberValues;
+      var count_list = [];
+      for (i in temp_value){
+        count_list.push([i,temp_value[i]]);
+      }
 
-    // change to the required nested list for function
-    var count_list = [];
-    for (i in temp_value){
-      count_list.push([i,temp_value[i]]);
+      var new_color = color_convertor(count_list);
+      visualization(new_color);
+      }
+    catch(err) {
+      alert("eigenvector calculation fail due to " +  err.message);
     }
 
-    var new_color = color_convertor(count_list);
-    visualization(new_color);
-
-
   } else if (d == '#reset'){
+    pre_sosc = d;
+    sosc_bool = false;
+    normal_bool = true;
+    svg.select(".legend").selectAll("g").remove();
+
+    var sequentialScale = d3.scaleSequential(d3.interpolateSpectral)
+      .domain([0,6]);
+
+    var logLegend = d3.legendColor()
+      .title("Color Index")
+      .titleWidth(100)
+      .cells(7)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
     var raw_link = d3.select("g.nodes").selectAll("g").data();
 
     // get back the original rgb value of the nodes
@@ -466,4 +559,246 @@ function visualization(new_color){
     d3.select("g[id='" + new_color[i][0] + "']").select("circle").style("fill", new_color[i][1]);
   }
 
+}
+
+
+function custseg(d, node_data){
+
+  normal_bool = false;
+  custseg_bool = true;
+  sosc_bool = false;
+
+  svg.select(".legend").selectAll("g").remove();
+  if (node_data == "current"){
+    var raw_node = d3.select("g.nodes").selectAll("g").data();
+  } else {
+    var raw_node = node_data;
+  }
+
+  if (d == "#age" || ((slider_change && pre_custseg == "#age"))) {
+    // 0 - 10, 11 - 20
+    pre_custseg = d;
+    var age = [];
+    for (var i in raw_node){
+      if (raw_node[i].age.toString().length == 1){
+      age.push([raw_node[i].id, d3.interpolateReds(0)]);
+      } else {
+      age.push([raw_node[i].id, d3.interpolateReds(parseInt(raw_node[i].age.toString()[0])/10)]);
+    }
+  }
+
+    var sequentialScale = d3.scaleSequential(d3.interpolateReds)
+      .domain([0,10]);
+
+    var logLegend = d3.legendColor()
+      .title("Age Index")
+      .titleWidth(100)
+      .cells(11)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    visualization(age);
+
+  } else if (d == "#gend" || ((slider_change && pre_custseg == "#gend"))){
+    // M & F
+    pre_custseg = d;
+    var gender = [];
+    for (var i in raw_node){
+      if (raw_node[i].gender == "M") {
+      gender.push([raw_node[i].id, 'rgb(155, 212, 245)']);
+    } else {
+      gender.push([raw_node[i].id, "rgb(254, 127, 156)"]);
+    }
+  }
+
+    var sequentialScale = d3.scaleOrdinal()
+      .domain(["Male", "Female"])
+      .range(["rgb(155, 212, 245)", "rgb(254, 127, 156)"]);
+
+    var logLegend = d3.legendColor()
+      .title("Gender Color")
+      .titleWidth(100)
+      .cells(2)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    visualization(gender);
+
+  } else if (d == "#addr" || ((slider_change && pre_custseg == "#addr"))){
+    // 'Yuen Long','Sha Tin','Tai Po','Sham Shui Po','Sai Kung','Southern',
+    // 'Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong',
+    // 'Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands'
+    pre_custseg = d;
+    var address = [];
+    for (var i in raw_node){
+      if (raw_node[i].address == "Yuen Long") {
+      address.push([raw_node[i].id, 'rgb(189, 213, 225)']);
+    } else if (raw_node[i].address == "Sha Tin") {
+      address.push([raw_node[i].id, "rgb(73, 100, 65)"]);
+    } else if (raw_node[i].address == "Tai Po") {
+      address.push([raw_node[i].id, "rgb(120, 158, 99)"]);
+    } else if (raw_node[i].address == "Sham Shui Po") {
+      address.push([raw_node[i].id, "rgb(184, 174, 184)"]);
+    } else if (raw_node[i].address == "Sai Kung") {
+      address.push([raw_node[i].id, "rgb(198, 162, 91)"]);
+    } else if (raw_node[i].address == "Southern") {
+      address.push([raw_node[i].id, "rgb(239, 122, 90)"]);
+    } else if (raw_node[i].address == "Yau Tsim Mong") {
+      address.push([raw_node[i].id, "rgb(163, 132, 113)"]);
+    } else if (raw_node[i].address == "Wan Chai") {
+      address.push([raw_node[i].id, "rgb(168, 37, 7)"]);
+    } else if (raw_node[i].address == "Eastern") {
+      address.push([raw_node[i].id, "rgb(246, 177, 149)"]);
+    } else if (raw_node[i].address == "Wong Tai Sin") {
+      address.push([raw_node[i].id, "rgb(218, 181, 123)"]);
+    } else if (raw_node[i].address == "Kwun Tong") {
+      address.push([raw_node[i].id, "rgb(195, 189, 127)"]);
+    } else if (raw_node[i].address == "Kwai Tsing") {
+      address.push([raw_node[i].id, "rgb(122, 114, 147)"]);
+    } else if (raw_node[i].address == "North") {
+      address.push([raw_node[i].id, "rgb(172, 188, 162)"]);
+    } else if (raw_node[i].address == "Kowloon City") {
+      address.push([raw_node[i].id, "rgb(199, 161, 124)"]);
+    } else if (raw_node[i].address == "Tuen Mun") {
+      address.push([raw_node[i].id, "rgb(114, 142, 154)"]);
+    } else if (raw_node[i].address == "Tsuen Wan") {
+      address.push([raw_node[i].id, "rgb(141, 161, 168)"]);
+    } else if (raw_node[i].address == "Islands") {
+      address.push([raw_node[i].id, "rgb(222, 205, 126)"]);
+    }
+  }
+
+    var sequentialScale = d3.scaleOrdinal()
+      .domain(["Yuen Long","Sha Tin", 'Tai Po','Sham Shui Po','Sai Kung','Southern','Yau Tsim Mong','Wan Chai','Eastern','Wong Tai Sin','Kwun Tong','Kwai Tsing','North','Kowloon City','Tuen Mun','Tsuen Wan','Islands'])
+      .range(['rgb(189, 213, 225)', "rgb(73, 100, 65)", "rgb(120, 158, 99)", "rgb(184, 174, 184)", "rgb(198, 162, 91)", "rgb(239, 122, 90)", "rgb(163, 132, 113)", "rgb(168, 37, 7)", "rgb(246, 177, 149)", "rgb(218, 181, 123)", "rgb(195, 189, 127)", "rgb(122, 114, 147)", "rgb(172, 188, 162)", "rgb(199, 161, 124)", "rgb(114, 142, 154)", "rgb(141, 161, 168)", "rgb(222, 205, 126)"]);
+
+    var logLegend = d3.legendColor()
+      .title("Address Color")
+      .titleWidth(100)
+      .cells(17)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    visualization(address);
+
+  } else if (d == "#smok"  || ((slider_change && pre_custseg == "#smok"))) {
+    // Smoker & Non-somker
+    pre_custseg = d;
+    var smoker = [];
+    for (var i in raw_node){
+      if (raw_node[i].gender == "Smoker"){
+      smoker.push([raw_node[i].id, 'rgb(30, 20, 19)']);
+    } else {
+      smoker.push([raw_node[i].id, "rgb(57, 255, 20)"]);
+    }
+  }
+
+    var sequentialScale = d3.scaleOrdinal()
+      .domain(["Smoker","Non-Smoker"])
+      .range(['rgb(30, 20, 19)', "rgb(57, 255, 20)"]);
+
+    var logLegend = d3.legendColor()
+      .title("Smoker Color")
+      .titleWidth(100)
+      .cells(2)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    visualization(smoker);
+
+  } else if (d == "#edu"  || ((slider_change && pre_custseg == "#edu"))) {
+    // Primary,Secondary,Tertiary
+    pre_custseg = d;
+    var education = [];
+    for (var i in raw_node){
+      if (raw_node[i].education == "Primary") {
+      education.push([raw_node[i].id, 'rgb(177, 156, 217)']);
+    } else if (raw_node[i].education == "Secondary") {
+      education.push([raw_node[i].id, "rgb(178, 0, 255)"]);
+    } else if (raw_node[i].education == "Tertiary") {
+      education.push([raw_node[i].id, "rgb(69, 38, 77)"]);
+    }
+  }
+
+    var sequentialScale = d3.scaleOrdinal()
+      .domain(["Primary","Secondary", 'Tertiary'])
+      .range(['rgb(177, 156, 217)', "rgb(178, 0, 255)", "rgb(69, 38, 77)"]);
+
+    var logLegend = d3.legendColor()
+      .title("Education Color")
+      .titleWidth(100)
+      .cells(3)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    visualization(education);
+
+  } else if (d == "#heal"  || ((slider_change && pre_custseg == "#heal"))) {
+    // Normal, Hypertension, Cancer, Diabetes
+    pre_custseg = d;
+    var health = [];
+    for (var i in raw_node){
+      if (raw_node[i].health == "Normal") {
+      health.push([raw_node[i].id, 'rgb(57, 255, 20)']);
+    } else if (raw_node[i].health == "Hypertension") {
+      health.push([raw_node[i].id, "rgb(139, 0, 0)"]);
+    } else if (raw_node[i].health == "Cancer") {
+      health.push([raw_node[i].id, "rgb(92, 64, 51)"]);
+    } else if (raw_node[i].health == "Diabetes") {
+      health.push([raw_node[i].id, "rgb(255, 255, 224)"]);
+    }
+  }
+
+    var sequentialScale = d3.scaleOrdinal()
+      .domain(["Normal","Hypertension", 'Cancer', 'Diabetes'])
+      .range(['rgb(57, 255, 20)', "rgb(139, 0, 0)", 'rgb(92, 64, 51)','rgb(255, 255, 224)']);
+
+    var logLegend = d3.legendColor()
+      .title("Health Color")
+      .titleWidth(100)
+      .cells(4)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    visualization(health);
+
+  } else if (d == "#reset") {
+    pre_custseg = d;
+    normal_bool = true;
+    custseg_bool = false;
+    svg.select(".legend").selectAll("g").remove();
+
+    var sequentialScale = d3.scaleSequential(d3.interpolateSpectral)
+      .domain([0,6]);
+
+    var logLegend = d3.legendColor()
+      .title("Color Index")
+      .titleWidth(100)
+      .cells(7)
+      .scale(sequentialScale);
+
+    svg.select(".legend").append('g')
+      .call(logLegend);
+
+    var raw_link = d3.select("g.nodes").selectAll("g").data();
+
+    // get back the original rgb value of the nodes
+    var origin_color = [];
+    for (i in raw_link){
+      origin_color.push([raw_link[i].id,color_degree(raw_link[i].group)]);
+    }
+    visualization(origin_color);
+  }
 }
